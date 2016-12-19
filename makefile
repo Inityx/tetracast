@@ -1,7 +1,7 @@
 TETRACAST=$(addprefix build/, $(patsubst %.cpp, %.o, $(notdir $(wildcard src/tc/*.cpp))))
 
 DCXX=clang++
-DCFLAGS=
+DCFLAGS=--std=c++14
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 
 ACXX=
@@ -10,6 +10,9 @@ AFLAGS=
 
 all: desktop
 
+run: desktop
+	build/tc_desktop
+
 desktop: CXX=$(DCXX)
 desktop: CFLAGS=$(DCFLAGS)
 desktop: build/tc_desktop
@@ -17,12 +20,18 @@ desktop: build/tc_desktop
 build/tc_desktop: $(TETRACAST) src/sfml_frontend.cpp
 	$(CXX) src/sfml_frontend.cpp  $(TETRACAST) -o build/tc_desktop $(CFLAGS) $(SFMLFLAGS)
 
+
 arduino: CXX=$(ACXX)
 arduino: CFLAGS=$(ACFLAGS)
-arduino: $(TETRACAST)
+arduino: build/arduino_driver build/arduino_display
 
-$(TETRACAST): build/%.o: src/tc/%.cpp src/tc/%.hpp src/tc/gamedefs.h
-	$(CXX) -c $< -o $@ $(CFLAGS) 
+build/arduino_driver: $(TETRACAST)
+	
+build/arduino_display: build/block.o build/blockvector.o
+
+
+$(TETRACAST): build/%.o: $(addprefix src/tc/, %.cpp %.hpp gamedefs.h)
+	$(CXX) -c $< -o $@ $(CFLAGS)
 
 
 .PHONY: clean

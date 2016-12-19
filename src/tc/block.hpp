@@ -13,14 +13,18 @@ namespace tc {
         inline uint8_t coord(uint8_t);
         
     public:
-        Block() {}
-        Block(uint16_t);
+        static const uint16_t shapes[7];
+        
+        Block();
+        Block(uint16_t, uint8_t, uint8_t);
         
         uint8_t x(uint8_t);
         uint8_t y(uint8_t);
         uint8_t e(uint8_t);
 
         Block operator=(const Block&);
+        
+        void remove();
         bool is_gone();
     };
 }

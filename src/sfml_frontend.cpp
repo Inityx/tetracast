@@ -1,18 +1,73 @@
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include "tc/game.hpp"
+#include "tc/gamedefs.h"
+
+#define PRINT_EVENTS false
+
+#define SCALE_FACTOR 50
+#define FRAMERATE 30
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Window");
-    
     tc::Game game;
+    tc::Game::State state;
+    srand(time(NULL));
     
-    while(window.isOpen()) {
-        window.clear();
-        window.display();
+    sf::RenderWindow window(
+        sf::VideoMode(GAME_WIDTH*SCALE_FACTOR, GAME_HEIGHT*SCALE_FACTOR),
+        "SFML Window"
+    );
+    window.setFramerateLimit(FRAMERATE);
+    
+    sf::Clock tick_clock;
+    sf::Event event;
+    struct { int type; int count; } prev_meta = { -1, 0 };
+    
+    while(window.isOpen()) { // Display frame loop
+        while (window.pollEvent(event)) { // Process window event queue
+            switch(event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                
+                default:
+                    if(!PRINT_EVENTS) break;
+                    if(event.type != prev_meta.type) {
+                        printf("\n");
+                        prev_meta.count = 0;
+                    }
+                    printf("Event %2d (%d)\r", (int) event.type, prev_meta.count);
+                    prev_meta.count++;
+                    break;
+            }
+            prev_meta.type = event.type;
+        }
         
-        sf::Event event;
-        while (window.pollEvent(event))
-            if (event.type == sf::Event::Closed) window.close();
+        state = game.try_tick(
+            tick_clock.getElapsedTime().asMilliseconds(),
+            rand()
+        );
+        
+        switch(state) {
+            case tc::Game::NO_ACTION:
+                break;
+            
+            case tc::Game::LOSE:
+                puts("HAH, you lose");
+                window.close();
+                break;
+            
+            case tc::Game::TICK:
+                tick_clock.restart();
+                window.clear(sf::Color::Black);
+                // draw content
+                break;
+        }
+        
+        window.display();
     }
     
     return EXIT_SUCCESS;

@@ -1,18 +1,25 @@
 #include "block.hpp"
 
 namespace tc {
-    Block::Block(uint16_t shape) {
-        storage1 = shape >> 8;
-        storage2 = shape;
-        coords = 0x4F;
-        rotation = 0x00;
+    const uint16_t Block::shapes[7] = {
+       0b0001'0101'1001'1011, // left L
+       0b0011'0111'1011'1001, // right L
+       0b0001'0101'0111'1011, // left S
+       0b0011'0111'0101'1001, // right S
+       0b0001'0011'0111'0101, // square
+       0b0001'0101'1101'0111, // tee
+       0b0001'0101'1001'1101  // line
+    };
+   
+    Block::Block() {
+        remove();
     }
     
-    bool Block::is_gone() {
-        return !(
-            (storage1 & 0x11) || 
-            (storage2 & 0x11)
-        );
+    Block::Block(uint16_t shape, uint8_t start_coords, uint8_t start_rot) {
+        storage1 = shape >> 8;
+        storage2 = shape;
+        coords = start_coords;
+        rotation = start_rot;
     }
 
     uint8_t Block::coord(uint8_t n) {
@@ -28,5 +35,16 @@ namespace tc {
         coords = rhs.coords;
         rotation = rhs.rotation;
         return *this;
+    }
+    
+    void Block::remove() {
+        storage1 = storage2 = coords = rotation = 0x0;
+    }
+    
+    bool Block::is_gone() {
+        return !(
+            (storage1 & 0x11) ||
+            (storage2 & 0x11)
+        );
     }
 }
