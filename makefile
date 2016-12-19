@@ -21,7 +21,7 @@ arduino: CXX=$(ACXX)
 arduino: CFLAGS=$(ACFLAGS)
 arduino: $(TETRACAST)
 
-$(TETRACAST): build/%.o: src/tc/%.cpp src/tc/%.hpp
+$(TETRACAST): build/%.o: src/tc/%.cpp src/tc/%.hpp src/tc/gamedefs.h
 	$(CXX) -c $< -o $@ $(CFLAGS) 
 
 
