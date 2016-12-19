@@ -1,11 +1,4 @@
-TETRACAST= \
-$(addprefix build/, \
-	$(patsubst %.cpp, %.o, \
-		$(notdir \
-			$(wildcard src/tc/*.cpp) \
-		) \
-	) \
-)
+TETRACAST=$(addprefix build/, $(patsubst %.cpp, %.o, $(notdir $(wildcard src/tc/*.cpp))))
 
 DCXX=clang++
 DCFLAGS=
@@ -22,8 +15,7 @@ desktop: CFLAGS=$(DCFLAGS)
 desktop: build/tc_desktop
 
 build/tc_desktop: $(TETRACAST) src/sfml_frontend.cpp
-	$(CXX) src/sfml_frontend.cpp  $(TETRACAST) \
-		-o build/tc_desktop $(CFLAGS) $(SFMLFLAGS)
+	$(CXX) src/sfml_frontend.cpp  $(TETRACAST) -o build/tc_desktop $(CFLAGS) $(SFMLFLAGS)
 
 arduino: CXX=$(ACXX)
 arduino: CFLAGS=$(ACFLAGS)
