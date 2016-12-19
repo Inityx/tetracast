@@ -3,6 +3,21 @@
 
 #include <stdint.h>
 
+// Block storage bitmap
+/*
+  +---+-- MSB
+  | x |  Square 0
+  | x |    X coord (2 bits)
+  | y |    Y coord (1 bit)
+  | v |    On/off  (1 bit)
+  +---+
+  | x |  Square 1
+  | x |
+  | y |
+  | v |
+  +---+-- LSB
+*/
+
 namespace tc {
     class Block {
         uint8_t storage1;
