@@ -1,87 +1,35 @@
 //#include "db.h"
-class Step4988
-{
-  private:
-    byte stepPin, dirPin, enablePin;
-  public:
-    Step4988(byte stepPin, byte dirPin, byte enablePin);
-    void rotate(int16_t deg);
-    void microtate(long deg);
-    void disable();
-    void enable();
-    
-};
+#include "step4988.h"
+#include "coord.h"
 
-void Step4988::rotate(int16_t deg)
+typedef Coord<long> mov_c;
+void microtate(Coord<Step4988&> steps, const mov_c& deg)
 {
-  enable();
-  digitalWrite(dirPin, deg < 0);
-  for(int16_t i=0; i<abs(deg*200/360); i++)
+  digitalWrite(steps.x.dirPin, deg.x < 0);
+  digitalWrite(steps.y.dirPin, deg.y < 0);
+  mov_c ab (abs(deg.x), abs(deg.y));
+  for (long i = 0; i < max(ab.x, ab.y); i++)
   {
-    digitalWrite(stepPin, HIGH);
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(1000);
-  }
-}
-unsigned long del = 140;
-void Step4988::microtate(long deg)
-{
-  enable();
-  digitalWrite(dirPin, deg < 0);
-  for(long i=0; i < abs(deg); i++)
-  {
-    digitalWrite(stepPin, HIGH);
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(del);
-  }
-}
-void Step4988::enable()
-{
-  digitalWrite(enablePin, 0);
-}
-
-void Step4988::disable()
-{
-  digitalWrite(enablePin, 1);
-}
-
-Step4988::Step4988(byte stepPin, byte dirPin, byte enablePin):
-  stepPin(stepPin), dirPin(dirPin), enablePin(enablePin)
-{
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
-  pinMode(enablePin, OUTPUT);
-}
-template <typename T>
-struct Coord
-{
-  T x, y;
-  Coord():x(0), y(0) {}
-  Coord(T x, T y):
-    x(x), y(y)
+    if (i < ab.x)
     {
+      digitalWrite(steps.x.stepPin, HIGH);
+      digitalWrite(steps.x.stepPin, LOW);
     }
-  Coord<T> operator-(const Coord<T>& p) const {
-    return Coord<T>(x - p.x, y - p.y);
+    if (i < ab.y)
+    {
+      digitalWrite(steps.y.stepPin, HIGH);
+      digitalWrite(steps.y.stepPin, LOW);
+    }
+    delayMicroseconds(Step4988::del);
   }
-  Coord(const Coord<T>& p):x(p.x), y(p.y) {}
-};
-typedef Coord<long> coord;
-
+}
+const int STEP_SIZE = 8;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(7, OUTPUT);
 }
-//coord func (unsigned long t)
-//{
-//  coord result;
-//  int scaleT = (t / 1000) % points;
-//  result.x  = (signed char)pgm_read_byte_near(xvalues + scaleT)/3;
-//  result.y = -(signed char)pgm_read_byte_near(yvalues + scaleT)/3;
-//  return result;
-//}
-enum Pen: uint8_t {
+enum Pen : uint8_t {
   UP = LOW,
   DOWN = HIGH
 };
@@ -91,16 +39,16 @@ void pen(uint8_t p)
 }
 void stepris_draw(Coord<Step4988&> steppers, uint16_t blockCode)
 {
-  const int stepsize = 10;
-  Coord<int> netDelta(0,0);
-  Coord<int8_t> oldxy(0,0);
+  const int stepsize = STEP_SIZE;
+  Coord<int> netDelta(0, 0);
+  Coord<int8_t> oldxy(0, 0);
   const long freezetime = 12;
   int8_t x, y;
-  for(uint16_t sh = blockCode; sh; sh >>= 4)
+  for (uint16_t sh = blockCode; sh; sh >>= 4)
   {
     x = (sh & 0xC) >> 2;
     y = (sh & 0x2) >> 1;
-    if(blockCode >> 4)
+    if (blockCode >> 4)
       pen(DOWN);
     steppers.x.microtate(stepsize * (x - netDelta.x));
     steppers.y.microtate(stepsize * (y - netDelta.y));
@@ -109,7 +57,7 @@ void stepris_draw(Coord<Step4988&> steppers, uint16_t blockCode)
     netDelta.x += (x - netDelta.x);
     netDelta.y += (y - netDelta.y);
     delay(freezetime);
-    oldxy = Coord<int8_t>(x,y);
+    oldxy = Coord<int8_t>(x, y);
   }
   steppers.x.microtate(-stepsize * netDelta.x);
   steppers.y.microtate(-stepsize * netDelta.y);
@@ -117,59 +65,100 @@ void stepris_draw(Coord<Step4988&> steppers, uint16_t blockCode)
 
 void stepris_bdraw(Coord<Step4988&> steppers, uint8_t blockCode)
 {
-  const int stepsize = 10;
-  Coord<int> delta(0,0);
+  const int stepsize = STEP_SIZE;
+  mov_c delta(0, 0);
   uint8_t last = (blockCode >> 6) & 0x3;
-  for(uint8_t i = 0; i < 8; i+=2)
+  for (uint8_t i = 0; i < 8; i += 2)
   {
     uint8_t c = (blockCode >> (6 - i)) & 3;
     int step = c & 2 ? -stepsize : stepsize;
-//    if(i == 6 && c == (last ^ 0x2))
-//      break;
+    //    if(i == 6 )
+    //      break;
+    delayMicroseconds(500);
     pen(DOWN);
-    if(c & 1)
+    if (c & 1)
     {
       steppers.x.microtate(step);
-      delta.x+= (c & 2) ? -1 : 1;
+      delta.x += (c & 2) ? -1 : 1;
     }
     else
     {
       steppers.y.microtate(step);
-      delta.y+= (c & 2) ? -1 : 1;
+      delta.y += (c & 2) ? -1 : 1;
     }
     last = c & 3;
-    delay(1);
+    //delay(1);
     pen(UP);
   }
   steppers.x.microtate(-delta.x * stepsize);
   steppers.y.microtate(-delta.y * stepsize);
 }
+
 void loop() {
   // put your main code here, to run repeatedly:
-  
+
   Step4988 ystepper(10, 9, 8);
   Step4988 xstepper(13, 12, 11);
-  Coord<long> now,last;
-//  last = func(0);
   Coord<Step4988&> steppers(xstepper, ystepper);
   uint8_t pieces[] = {
     0b01010010, //J
     0b00000111, //L
-    
+    0b01000111, //Z
+    0b00010010, //S
+    0b01001110, //O
+    0b01001001, //T
+    0b00000010, //I
   };
-  while(true)
+  int jump_size = STEP_SIZE * 4;
+  while (true)
   {
-    pen(DOWN);
-    //stepris_draw(steppers, 0x159B);
-    delay(2);
-    stepris_bdraw(steppers, pieces[0]);
-    pen(UP);
-    ystepper.microtate(-40);
-    pen(DOWN);
-    delay(2);
-    stepris_draw(Coord<Step4988&>(xstepper, ystepper), 0x159B);
-    pen(UP);
-    ystepper.microtate(40);
+    mov_c netDelta(0, 0);
+    for (int i = 0; i < sizeof(pieces); i++)
+    {
+      delayMicroseconds(300); //for laser to stabilize
+      pen(DOWN);
+      stepris_bdraw(steppers, pieces[i]);
+      pen(UP);
+      mov_c movement = (i%4 == 3) ? 
+        mov_c(1, -3):
+        mov_c(0, 1);
+      microtate(steppers, movement * jump_size);
+      netDelta += movement;
+//      if (i % 4 == 3)
+//      {
+//        xstepper.microtate(jumpsize);
+//        ystepper.microtate(-3 * jumpsize);
+//        netDelta.x++;
+//        netDelta.y -= 3;
+//      }
+//      else
+//      {
+//        ystepper.microtate(jumpsize);
+//        netDelta.y++;
+//      }
+    }
+    microtate(steppers, netDelta * (-jump_size));
+    Step4988::del = Step4988::del * 98  / 100;
+    if(Step4988::del < 140)
+      Step4988::del = 1000;
+//    ystepper.microtate(-jumpsize * netDelta.y);
+//    xstepper.microtate(-jumpsize * netDelta.x);
+//    //stepris_drawgrid(steppers, 4, 4);
+    while (Serial.available())
+    {
+      switch (Serial.read())
+      {
+        case 'w': ystepper.microtate(-STEP_SIZE); break;
+        case 's': ystepper.microtate( STEP_SIZE); break;
+        case 'a': xstepper.microtate(-STEP_SIZE); break;
+        case 'd': xstepper.microtate( STEP_SIZE); break;
+        case 'x': Step4988::del = Step4988::del * 102 / 100; break;
+        case 'c': Step4988::del = Step4988::del * 98  / 100; break;
+        default: break;
+      }
+      delay(1);
+    }
   }
+
 
 }
