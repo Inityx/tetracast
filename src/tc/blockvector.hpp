@@ -13,13 +13,15 @@ namespace tc {
     class BlockVector {
         Block storage[MAX_BLK];
         uint16_t size;
+        
+        void shrink();
 
     public:
         BlockVector() {
             size = 0;
         }
         void append(const Block&);
-        void collapse();
+        void collapse(uint8_t, int8_t [MAX_COLLAPSE]);
     };
 }
 

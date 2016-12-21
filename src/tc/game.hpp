@@ -1,6 +1,9 @@
 #ifndef GAME
 #define GAME
 
+#include <stdint.h>
+
+#include "boardmask.hpp"
 #include "blockvector.hpp"
 #include "block.hpp"
 
@@ -11,6 +14,7 @@
 
 namespace tc {
     class Game {
+        BoardMask boardmask;
         BlockVector blocks;
         Block piece;
         uint32_t tick_ms;

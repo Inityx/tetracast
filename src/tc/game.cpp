@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "game.hpp"
 
 namespace tc {
@@ -19,24 +17,25 @@ namespace tc {
         if(tick_ms > MINIMUM_TICK) tick_ms--;
         
         if(piece.is_gone()) {
-            puts("Piece is gone");
             new_piece(random_seed);
             return TICK;
         }
         
         if(try_sink_piece()) {
-            puts("Sunk block");
             return TICK;
         }
         
         if(try_place_piece()) {
-            puts("Placed block");
+            int8_t lines[MAX_COLLAPSE];
+            uint8_t count;
+            
+            count = boardmask.collapse(lines);
+            if(count > 0) blocks.collapse(count, lines);
+            
             piece.remove();
-            collapse_lines();
             return TICK;
         }
         
-        puts("Return lose");
         return LOSE;
     }
     
@@ -50,10 +49,6 @@ namespace tc {
         // if block cannot be placed, return false
         // else place block, and return true
         return false;
-    }
-    
-    void Game::collapse_lines() {
-        // collapse full lines and shrink vector
     }
     
     void Game::try_move(Game::Move move) {

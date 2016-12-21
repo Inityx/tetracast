@@ -7,7 +7,11 @@ namespace tc {
         size++;
     }
     
-    void BlockVector::collapse() {
+    void BlockVector::collapse(uint8_t count, int8_t lines[MAX_COLLAPSE]) {
+        shrink();
+    }
+    
+    void BlockVector::shrink() {
         if(size == 0) return;
         
         Block* start = &storage[0];
