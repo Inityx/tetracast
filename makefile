@@ -1,14 +1,15 @@
 TETRACAST=$(addprefix build/, $(patsubst %.cpp, %.o, $(notdir $(wildcard src/tc/*.cpp))))
 
 DCXX=clang++
-DCFLAGS=--std=c++14
+DCFLAGS=--std=c++14 -Wpedantic
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 
 ACXX=
-AFLAGS=
+AFLAGS=-Wpedantic
 
 
 all: desktop
+fresh: clean all
 
 run: desktop
 	build/tc_desktop
