@@ -17,7 +17,7 @@ desktop: CXX=$(DCXX)
 desktop: CFLAGS=$(DCFLAGS)
 desktop: build/tc_desktop
 
-build/tc_desktop: $(TETRACAST) src/sfml_frontend.cpp
+build/tc_desktop: $(TETRACAST) src/sfml_frontend.cpp src/sfml_aux.hpp
 	$(CXX) src/sfml_frontend.cpp  $(TETRACAST) -o build/tc_desktop $(CFLAGS) $(SFMLFLAGS)
 
 

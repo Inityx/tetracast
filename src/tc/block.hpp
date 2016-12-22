@@ -18,6 +18,8 @@
   +---+-- LSB
 */
 
+typedef uint8_t square_index;
+
 namespace tc {
     class Block {
         uint8_t storage1;
@@ -25,7 +27,7 @@ namespace tc {
         uint8_t coords;
         uint8_t rotation;
         
-        inline uint8_t coord(uint8_t);
+        inline uint8_t square(square_index);
         
     public:
         static const uint16_t shapes[7];
@@ -36,7 +38,11 @@ namespace tc {
         uint8_t x(uint8_t);
         uint8_t y(uint8_t);
         uint8_t e(uint8_t);
-
+        
+        void move_left();
+        void move_right();
+        void move_down();
+        
         Block operator=(const Block&);
         
         void remove();

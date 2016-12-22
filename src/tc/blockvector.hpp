@@ -9,10 +9,12 @@
     #error Max block count is larger than vector counter max
 #endif
 
+typedef uint16_t bvec_index;
+
 namespace tc {
     class BlockVector {
         Block storage[MAX_BLK];
-        uint16_t size;
+        bvec_index size;
         
         void shrink();
 
@@ -20,6 +22,10 @@ namespace tc {
         BlockVector() {
             size = 0;
         }
+        Block& operator[](bvec_index index) {
+            return storage[index];
+        }
+        bvec_index get_size() { return size; }
         void append(const Block&);
         void collapse(uint8_t, int8_t [MAX_COLLAPSE]);
     };
