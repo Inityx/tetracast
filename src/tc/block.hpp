@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+
 // Block storage bitmap
 /*
   +---+-- MSB
@@ -18,6 +19,7 @@
   +---+-- LSB
 */
 
+#define BLOCK_SQUARES 4
 typedef uint8_t square_index;
 
 namespace tc {
@@ -33,11 +35,12 @@ namespace tc {
         static const uint16_t shapes[7];
         
         Block();
+        Block(const Block& src);
         Block(uint16_t, uint8_t, uint8_t);
         
-        uint8_t x(uint8_t);
-        uint8_t y(uint8_t);
-        uint8_t e(uint8_t);
+        uint8_t x(square_index);
+        uint8_t y(square_index);
+        uint8_t e(square_index);
         
         void move_left();
         void move_right();

@@ -54,7 +54,7 @@ int main() {
                     
                     printf(
                         "Event %2d (%d)\r",
-                        (int) event.type,
+                        event.type,
                         prev_event_meta.count
                     );
                     

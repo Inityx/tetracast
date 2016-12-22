@@ -14,10 +14,15 @@ namespace tc {
     Block::Block() {
         remove();
     }
-    
+    Block::Block(const Block& src) {
+        storage1 = src.storage1;
+        storage2 = src.storage2;
+        coords   = src.coords;
+        rotation = src.rotation;
+    }
     Block::Block(uint16_t shape, uint8_t start_coords, uint8_t start_rot) {
-        storage1 = shape >> 8;
-        storage2 = shape;
+        storage1 = static_cast<uint8_t>(shape >> 8);
+        storage2 = static_cast<uint8_t>(shape);
         coords = start_coords;
         rotation = start_rot;
     }
@@ -32,7 +37,7 @@ namespace tc {
     Block Block::operator=(const Block& rhs) {
         storage1 = rhs.storage1;
         storage2 = rhs.storage2;
-        coords = rhs.coords;
+        coords   = rhs.coords;
         rotation = rhs.rotation;
         return *this;
     }

@@ -17,7 +17,7 @@ namespace tc {
         BoardMask boardmask;
         BlockVector blocks;
         Block piece;
-        uint32_t tick_ms;
+        uint16_t tick_ms;
         
         bool try_sink_piece();
         bool try_place_piece();
