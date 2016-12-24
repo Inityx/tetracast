@@ -8,6 +8,7 @@ namespace tc {
     }
     
     void BlockVector::collapse(uint8_t count, int8_t lines[MAX_COLLAPSE]) {
+        // TODO: Implement collapse
         shrink();
     }
     

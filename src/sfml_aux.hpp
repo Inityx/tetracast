@@ -7,6 +7,9 @@
 #include "tc/block.hpp"
 #include "tc/blockvector.hpp"
 
+void draw_dots(sf::RenderWindow&, int);
+void draw_blocks(sf::RenderWindow&, int, tc::Game&);
+
 void draw_dots(sf::RenderWindow& window, int scale) {
     int radius = scale/16;
     
@@ -23,8 +26,20 @@ void draw_dots(sf::RenderWindow& window, int scale) {
 }
 
 void draw_blocks(sf::RenderWindow& window, int scale, tc::Game& game) {
-    for(bvec_index index = 0; index<game.get_blocks().get_size(); index++) {
-        tc::Block& block = game.get_blocks()[index];
+    for(
+        bvec_index block_i = 0;
+        block_i<game.get_blocks().get_size();
+        block_i++
+    ) {
+        tc::Block& block = game.get_blocks()[block_i];
+        // draw block
+        for(
+            square_index square_i = 0;
+            square_i<BLOCK_SQUARES;
+            square_i++
+        ) {
+            // TODO
+        }
     }   
 }
 #endif

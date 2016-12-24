@@ -45,29 +45,13 @@ int main() {
                     break;
                 
                 default:
-                    if(!PRINT_EVENTS) break;
-                    
-                    if(event.type != prev_event_meta.type) {
-                        printf("\n");
-                        prev_event_meta.count = 0;
-                    }
-                    
-                    printf(
-                        "Event %2d (%d)\r",
-                        event.type,
-                        prev_event_meta.count
-                    );
-                    
-                    prev_event_meta.count++;
                     break;
             }
             prev_event_meta.type = event.type;
         }
         
         state = game.try_tick(
-            tick_clock
-                .getElapsedTime()
-                .asMilliseconds(),
+            tick_clock.getElapsedTime().asMilliseconds(),
             rand()
         );
         
