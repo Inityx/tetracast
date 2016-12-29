@@ -27,13 +27,8 @@ namespace tc {
         rotation = start_rot;
     }
 
-    uint8_t Block::square(square_index i) {
-        return ((i&0x02)?storage2:storage1) >> (0x01-(i&0x01))*4;
-    }
-    uint8_t Block::x(square_index i) { return (square(i) >> 2) & 0x03; }
-    uint8_t Block::y(square_index i) { return (square(i) >> 1) & 0x01; }
-    uint8_t Block::e(square_index i) { return (square(i) >> 0) & 0x01; }
-
+    void Block::move_down() { coords = (loc_x()<<NYBBLE_BITS) | (loc_y()-1); }
+    
     Block Block::operator=(const Block& rhs) {
         storage1 = rhs.storage1;
         storage2 = rhs.storage2;
@@ -44,12 +39,5 @@ namespace tc {
     
     void Block::remove() {
         storage1 = storage2 = coords = rotation = 0;
-    }
-    
-    bool Block::is_gone() {
-        return !(
-            (storage1 & 0x11) ||
-            (storage2 & 0x11)
-        );
     }
 }

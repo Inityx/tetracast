@@ -40,7 +40,10 @@ namespace tc {
         };
         
         Game() { tick_ms = INITIAL_TICK_MS; }
+        
+        // Debug
         BlockVector& get_blocks() { return blocks; }
+        Block& get_piece() { return piece; }
         
         State try_tick(uint16_t, uint8_t);
         void try_move(Move);

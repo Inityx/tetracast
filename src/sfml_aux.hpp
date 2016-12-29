@@ -34,7 +34,7 @@ void draw_blocks(sf::RenderWindow& window, int scale, tc::Game& game) {
         tc::Block& block = game.get_blocks()[block_i];
         // draw block
         for(
-            square_index square_i = 0;
+            tc::square_index square_i = 0;
             square_i<BLOCK_SQUARES;
             square_i++
         ) {

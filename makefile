@@ -1,7 +1,7 @@
 TETRACAST=$(addprefix build/, $(patsubst %.cpp, %.o, $(notdir $(wildcard src/tc/*.cpp))))
 
 DCXX=clang++
-DCFLAGS=--std=c++14 -Wpedantic
+DCFLAGS=--std=c++14 -Wpedantic -g
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 
 ACXX=

@@ -1,9 +1,13 @@
+#include <stdio.h>
+
 #include "game.hpp"
+#include "block.hpp"
 
 namespace tc {
     void Game::new_piece(uint8_t seed) {
+        puts("Game new piece");
         piece = Block(
-            (uint16_t) Block::shapes[
+            Block::shapes[
                 seed % (sizeof Block::shapes)
             ],
             0x4F,
@@ -17,15 +21,18 @@ namespace tc {
         if(tick_ms > MINIMUM_TICK) tick_ms--;
         
         if(piece.is_gone()) {
+            puts("Piece is gone");
             new_piece(random_seed);
             return TICK;
         }
         
         if(try_sink_piece()) {
+            puts("Sunk piece");
             return TICK;
         }
         
         if(try_place_piece()) {
+            puts("Placed piece");
             int8_t lines[MAX_COLLAPSE];
             uint8_t count;
             
@@ -36,13 +43,28 @@ namespace tc {
             return TICK;
         }
         
+        puts("Could not place piece");
         return LOSE;
     }
     
     bool Game::try_sink_piece() {
-        // if piece can't go down, return false
-        // else move piece and return true
-        return false;
+        puts("Try sink piece");
+        for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
+            printf("Square %d, y is %d\n", square_i, piece.global_y(square_i));
+            if(
+                !piece.is_gone() && (
+                    piece.global_y(square_i) == 0 ||
+                    boardmask.get(
+                        piece.global_y(square_i) - 1,
+                        piece.global_x(square_i)
+                    )
+                )
+            )
+                return false;
+        }
+        
+        piece.move_down();
+        return true;
     }
     
     bool Game::try_place_piece() {

@@ -1,8 +1,8 @@
-#include "boardmask.hpp"
-
-#if GAME_HEIGHT > 256
-    #error Game is taller than iterator
+#ifdef _POSIX_VERSION
+    #include <assert.h>
 #endif
+
+#include "boardmask.hpp"
 
 namespace tc {
     BoardMask::BoardMask() {
@@ -12,12 +12,12 @@ namespace tc {
     }
     
     uint8_t BoardMask::collapse(int8_t buff[MAX_COLLAPSE]) {
-        uint8_t skip;
+        boardmask_index skip;
         
         // write indeces to buffer
         skip = 0;
-        for(uint8_t row=0; row<GAME_HEIGHT; row++)
-            for(uint8_t byte=0; byte<STORE_BYTES; byte++)
+        for(boardmask_index row=0; row<GAME_HEIGHT; row++)
+            for(boardmask_index byte=0; byte<STORE_BYTES; byte++)
                 if(storage[byte][row] == (uint8_t)(GAME_W_BITMASK >> byte)) {
                     buff[skip] = row;
                     skip++;
@@ -39,5 +39,13 @@ namespace tc {
         
         // return number of collapsed rows
         return skip;
+    }
+    
+    bool BoardMask::get(boardmask_index row, boardmask_index column) {
+        // TODO: space above board should always be false
+#ifdef _POSIX_VERSION
+        assert(row > 0 && column > 0);
+#endif
+        return false;
     }
 }

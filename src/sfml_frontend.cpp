@@ -61,11 +61,14 @@ int main() {
             
             case tc::Game::LOSE:
                 puts("HAH, you lose");
+                printf("x: %d, y: %d\n", game.get_piece().loc_x(), game.get_piece().loc_y());
                 // window.close();
                 pause();
                 break;
             
             case tc::Game::TICK:
+                puts("Tick");
+                printf("x: %d, y: %d\n", game.get_piece().loc_x(), game.get_piece().loc_y());
                 tick_clock.restart();
                 window.clear(sf::Color::Black);
                 // TODO: draw content
