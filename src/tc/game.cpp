@@ -63,7 +63,7 @@ namespace tc {
                 return false;
         }
         
-        piece.move_down();
+        piece.move_down(1);
         return true;
     }
     

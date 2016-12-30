@@ -52,14 +52,14 @@ namespace tc {
         inline uint8_t y(square_index i) { return (square(i) >> 1) & 0x01; }
         inline uint8_t e(square_index i) { return (square(i) >> 0) & 0x01; }
         inline uint8_t global_x(square_index i) { // FIXME: may need tweaking
-            return loc_x() +
-                ((rotation%2)?x(i):y(i)) *
-                ((rotation<2)?1:-1);
+            return loc_x() +              // block coord
+                ((rotation<2)?1:-1) *     // plus or minus
+                ((rotation%2)?x(i):y(i)); // square coord
         }
         inline uint8_t global_y(square_index i) { // FIXME: may need tweaking
-            return loc_y() +
-                ((rotation%2)?y(i):x(i)) *
-                ((rotation<2)?1:-1);
+            return loc_y() +              // block coord
+                ((rotation<2)?1:-1) *     // plus or minus
+                ((rotation%2)?y(i):x(i)); // square coord
         }
         
         inline bool is_gone() {
@@ -72,13 +72,13 @@ namespace tc {
         inline uint8_t loc_x() { return (coords&0xF0) >> NYBBLE_BITS; }
         inline uint8_t loc_y() { return coords&0x0F; }
         
+        void move_down(uint8_t);
         void move_left();
         void move_right();
-        void move_down();
         
         Block operator=(const Block&);
         
-        void remove();
+        inline void remove() { storage1 = storage2 = coords = rotation = 0; }
     };
 }
 

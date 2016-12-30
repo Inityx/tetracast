@@ -6,7 +6,7 @@
 
 namespace tc {
     BoardMask::BoardMask() {
-        for(uint8_t byte = 0; byte<STORE_BYTES; byte++)
+        for(boardmask_index byte = 0; byte<STORE_BYTES; byte++)
             for(uint8_t row=0; row<GAME_HEIGHT; row++)
                 storage[byte][row] = 0;
     }
@@ -18,7 +18,7 @@ namespace tc {
         skip = 0;
         for(boardmask_index row=0; row<GAME_HEIGHT; row++)
             for(boardmask_index byte=0; byte<STORE_BYTES; byte++)
-                if(storage[byte][row] == (uint8_t)(GAME_W_BITMASK >> byte)) {
+                if(storage[byte][row] == static_cast<uint8_t>(GAME_W_BITMASK >> byte)) {
                     buff[skip] = row;
                     skip++;
                 }
@@ -28,7 +28,7 @@ namespace tc {
         
         // collapse rows
         skip = 0;
-        for(uint8_t row=0; row<(GAME_HEIGHT-skip); row++) {
+        for(boardmask_index row=0; row<(GAME_HEIGHT-skip); row++) {
             if(row == buff[skip]) skip++;
 
             if(skip == 0) continue;
@@ -46,6 +46,10 @@ namespace tc {
 #ifdef _POSIX_VERSION
         assert(row > 0 && column > 0);
 #endif
+        // TODO: get board pixel
         return false;
+    }
+    void BoardMask::set(boardmask_index row, boardmask_index column) {
+        // TODO: set board pixel
     }
 }

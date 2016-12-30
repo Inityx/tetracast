@@ -11,15 +11,15 @@ namespace tc {
        0x159d  // 0b0001'0101'1001'1101  // line
     };
    
-    Block::Block() {
-        remove();
-    }
+    Block::Block() { remove(); }
+    
     Block::Block(const Block& src) {
         storage1 = src.storage1;
         storage2 = src.storage2;
         coords   = src.coords;
         rotation = src.rotation;
     }
+    
     Block::Block(uint16_t shape, uint8_t start_coords, uint8_t start_rot) {
         storage1 = static_cast<uint8_t>(shape >> 8);
         storage2 = static_cast<uint8_t>(shape);
@@ -27,7 +27,9 @@ namespace tc {
         rotation = start_rot;
     }
 
-    void Block::move_down() { coords = (loc_x()<<NYBBLE_BITS) | (loc_y()-1); }
+    void Block::move_down(uint8_t n) { if(n) coords = (loc_x()<<NYBBLE_BITS) | (loc_y()-n); }
+    void Block::move_left() {};
+    void Block::move_right() {};
     
     Block Block::operator=(const Block& rhs) {
         storage1 = rhs.storage1;
@@ -35,9 +37,5 @@ namespace tc {
         coords   = rhs.coords;
         rotation = rhs.rotation;
         return *this;
-    }
-    
-    void Block::remove() {
-        storage1 = storage2 = coords = rotation = 0;
     }
 }
