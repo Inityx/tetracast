@@ -8,13 +8,15 @@ TETRACAST_DESKTOP=$(addprefix $(DESKTOP_DIR)/, $(TETRACAST))
 TETRACAST_AVR=$(addprefix $(AVR_DIR)/, $(TETRACAST))
 
 DCXX=clang++
-DCFLAGS=--std=c++11 -Wpedantic -Os
+DCFLAGS=--std=c++11 -Weverything -g
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
+WNO_DESKTOP=-Wno-conversion -Wno-switch-enum
 
 ACXX=avr-g++
-AFLAGS=--std=c++11 -Wpedantic -Os
+AFLAGS=--std=c++11 -Weverything -Os
 
 .PHONY: clean desktop arduino avrdude
+
 
 all: desktop
 
@@ -23,8 +25,7 @@ run: desktop
 
 dude: avr
 	for target in driver display; do \
-	    echo -n "Connect $$target chip and press enter... "; \
-	    read; \
+	    echo -n "Connect $$target chip and press enter... "; read; \
 	    echo avrdude flash:w:$(BUILD)/tc_avr_$$target; \
 	done
 
@@ -33,8 +34,8 @@ desktop: CXX=$(DCXX)
 desktop: CFLAGS=$(DCFLAGS)
 desktop: $(BUILD)/tc_desktop
 
-build/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_aux.hpp
-	$(CXX) $(SRC)/sfml_frontend.cpp $(TETRACAST_DESKTOP) -o $(BUILD)/tc_desktop $(CFLAGS) $(SFMLFLAGS)
+$(BUILD)/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_aux.hpp
+	$(CXX) $(SRC)/sfml_frontend.cpp $(TETRACAST_DESKTOP) -o $(BUILD)/tc_desktop $(CFLAGS) $(SFMLFLAGS) $(WNO_DESKTOP)
 
 
 avr: CXX=$(ACXX)
