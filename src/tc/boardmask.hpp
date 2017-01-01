@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "gamedefs.h"
+
 #define STORE_BYTES 2
 
 #if GAME_HEIGHT > 127
@@ -13,7 +15,6 @@
     #error Game is wider than index
 #endif
 
-#include "gamedefs.h"
 #if GAME_WIDTH > (STORE_BYTES*8)
     #error Game is wider than storage
 #endif

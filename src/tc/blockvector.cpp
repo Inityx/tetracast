@@ -15,7 +15,7 @@ namespace tc {
                 // TODO: implement piece squashing
                 
                 // block must move location down the number of lines below it
-                uint8_t line_i, accum = 0;
+                uint8_t accum = 0;
                 for(uint8_t line_i = 0; line_i < line_count; line_i++)
                     if(block.loc_y() > lines[line_i])
                         accum++;

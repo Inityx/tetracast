@@ -51,12 +51,12 @@ namespace tc {
         inline uint8_t x(square_index i) { return (square(i) >> 2) & 0x03; }
         inline uint8_t y(square_index i) { return (square(i) >> 1) & 0x01; }
         inline uint8_t e(square_index i) { return (square(i) >> 0) & 0x01; }
-        inline uint8_t global_x(square_index i) { // FIXME: may need tweaking
+        inline int8_t global_x(square_index i) { // FIXME: may need tweaking
             return loc_x() +              // block coord
                 ((rotation<2)?1:-1) *     // plus or minus
                 ((rotation%2)?x(i):y(i)); // square coord
         }
-        inline uint8_t global_y(square_index i) { // FIXME: may need tweaking
+        inline int8_t global_y(square_index i) { // FIXME: may need tweaking
             return loc_y() +              // block coord
                 ((rotation<2)?1:-1) *     // plus or minus
                 ((rotation%2)?y(i):x(i)); // square coord

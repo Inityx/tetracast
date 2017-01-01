@@ -12,7 +12,7 @@ namespace tc {
     }
     
     uint8_t BoardMask::collapse(int8_t buff[MAX_COLLAPSE]) {
-        boardmask_index skip;
+        uint8_t skip;
         
         // write indeces to buffer
         skip = 0;

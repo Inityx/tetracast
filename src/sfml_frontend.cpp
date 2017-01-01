@@ -8,8 +8,6 @@
 #include "tc/gamedefs.h"
 #include "sfml_aux.hpp"
 
-#define PRINT_EVENTS false
-
 #define SCALE_FACTOR 50
 #define FRAMERATE 30
 

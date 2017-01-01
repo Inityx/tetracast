@@ -27,9 +27,12 @@ namespace tc {
         rotation = start_rot;
     }
 
-    void Block::move_down(uint8_t n) { if(n) coords = (loc_x()<<NYBBLE_BITS) | (loc_y()-n); }
-    void Block::move_left() {};
-    void Block::move_right() {};
+    void Block::move_down(uint8_t n) {
+        if(n)
+            coords = static_cast<uint8_t>(loc_x()<<NYBBLE_BITS) | (loc_y()-n);
+    }
+    void Block::move_left() {}
+    void Block::move_right() {}
     
     Block Block::operator=(const Block& rhs) {
         storage1 = rhs.storage1;
