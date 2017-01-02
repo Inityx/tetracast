@@ -41,13 +41,9 @@ int main()
 	to_reg(DDRB) |= _BV(5);
 	while(1)
 	{
-<<<<<<< HEAD
 		fastdw<PORTB, PB5>(1);
 		_delay_ms(500);
 		fastdw<PORTB, PB5>(0);
-=======
-		PORTB ^= _BV(5);
->>>>>>> 25cad8ddcef1ef10f338e00bd5757dade2c5eff3
 		_delay_ms(500);
 	}
 }
