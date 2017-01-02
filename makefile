@@ -39,7 +39,7 @@ run: desktop
 dude: avr
 	for target in driver display; do \
 	    echo -n "Connect $$target chip and press enter... "; read; \
-	    echo avrdude -p $(AVRDUDEMCU) $(DUDEFLAGS) -U flash:w:$(BUILD)/tc_avr_$${target}.hex; \
+	    sudo avrdude -p $(AVRDUDEMCU) $(DUDEFLAGS) -U flash:w:$(BUILD)/tc_avr_$${target}.hex; \
 	done
 
 clean:
