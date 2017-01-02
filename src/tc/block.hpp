@@ -30,6 +30,7 @@
 #define BLOCK_SQUARES 4
 #define NYBBLE_BITS 4
 
+
 namespace tc {
     typedef uint8_t square_index;
     
@@ -52,14 +53,14 @@ namespace tc {
         inline uint8_t y(square_index i) { return (square(i) >> 1) & 0x01; }
         inline uint8_t e(square_index i) { return (square(i) >> 0) & 0x01; }
         inline int8_t global_x(square_index i) { // FIXME: may need tweaking
-            return loc_x() +              // block coord
-                ((rotation<2)?1:-1) *     // plus or minus
-                ((rotation%2)?x(i):y(i)); // square coord
+            return loc_x() +                              // block coord
+                ((rotation<2)?int8_t(1):int8_t(-1)) *     // plus or minus
+                ((rotation%2)?x(i):y(i));                 // square coord
         }
         inline int8_t global_y(square_index i) { // FIXME: may need tweaking
-            return loc_y() +              // block coord
-                ((rotation<2)?1:-1) *     // plus or minus
-                ((rotation%2)?y(i):x(i)); // square coord
+            return loc_y() +                              // block coord
+                ((rotation<2)?int8_t(1):int8_t(-1)) *     // plus or minus
+                ((rotation%2)?y(i):x(i));                 // square coord
         }
         
         inline bool is_gone() {

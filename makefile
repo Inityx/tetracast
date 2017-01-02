@@ -12,8 +12,17 @@ DCFLAGS=--std=c++11 -Weverything -g
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 WNO_DESKTOP=-Wno-conversion -Wno-switch-enum
 
+#AVR compilation settings
 ACXX=avr-g++
-AFLAGS=--std=c++11 -Weverything -Os
+CPUFREQ=16000000
+MCU=atmega328p
+ACFLAGS=--std=c++11 -Os -DF_CPU=$(CPUFREQ)UL -mmcu=$(MCU) -lm -DAVR
+OBJ2HEX=avr-objcopy
+AVRDUDEMCU=m328p
+AVRPORT=/dev/ttyACM0
+AVRBAUD=115200
+DUDEFLAGS=-p $(AVRDUDEMCU) -c arduino -P $(AVRPORT) -b $(AVRBAUD)
+AVRDUDE=avrdude
 
 .PHONY: clean desktop arduino avrdude
 
@@ -26,7 +35,7 @@ run: desktop
 dude: avr
 	for target in driver display; do \
 	    echo -n "Connect $$target chip and press enter... "; read; \
-	    echo avrdude flash:w:$(BUILD)/tc_avr_$$target; \
+	    echo avrdude -p $(AVRDUDEMCU) $(DUDEFLAGS) -U flash:w:$(BUILD)/tc_avr_$${target}.hex; \
 	done
 
 
@@ -40,13 +49,15 @@ $(BUILD)/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_a
 
 avr: CXX=$(ACXX)
 avr: CFLAGS=$(ACFLAGS)
-avr: $(BUILD)/tc_avr_driver $(BUILD)/tc_avr_display
+avr: $(BUILD)/tc_avr_driver.hex $(BUILD)/tc_avr_display.hex
 
-$(BUILD)/tc_avr_driver: $(TETRACAST_AVR)
-	$(CXX) $(SRC)/avr_driver.cpp $(TETRACAST_AVR) -o $(BUILD)/tc_avr_driver $(CFLAGS)
+$(BUILD)/tc_avr_driver.hex: $(TETRACAST_AVR)
+	$(CXX) $(SRC)/avr_driver.cpp $(TETRACAST_AVR) -o $(AVR_DIR)/tc_avr_driver.out $(CFLAGS)
+	$(OBJ2HEX) -R .eeprom -O ihex $(AVR_DIR)/tc_avr_driver.out $(BUILD)/tc_avr_driver.hex
 
-$(BUILD)/tc_avr_display: $(AVR_DIR)/block.o $(AVR_DIR)/blockvector.o
-	$(CXX) $(SRC)/avr_display.cpp $(AVR_DIR)/block.o $(AVR_DIR)/blockvector.o -o $(BUILD)/tc_avr_display $(CFLAGS)
+$(BUILD)/tc_avr_display.hex: $(AVR_DIR)/block.o $(AVR_DIR)/blockvector.o
+	$(CXX) $(SRC)/avr_display.cpp $(AVR_DIR)/block.o $(AVR_DIR)/blockvector.o -o $(AVR_DIR)/tc_avr_display.out $(CFLAGS)
+	$(OBJ2HEX) -R .eeprom -O ihex $(AVR_DIR)/tc_avr_display.out $(BUILD)/tc_avr_display.hex
 
 
 $(DESKTOP_DIR)/%.o: $(addprefix $(SRC)/tc/, %.cpp %.hpp gamedefs.h) | $(DESKTOP_DIR)
@@ -64,4 +75,4 @@ $(AVR_DIR):
 
 clean:
 	rm -rf $(AVR_DIR) $(DESKTOP_DIR)
-	rm -f $(BUILD)/tc_desktop $(BUILD)/tc_avr_display $(BUILD)/tc_avr_driver
+	rm -f $(BUILD)/tc_desktop $(BUILD)/tc_avr_display.hex $(BUILD)/tc_avr_driver.hex
