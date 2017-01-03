@@ -42,6 +42,11 @@ dude: avr
 	    sudo avrdude -p $(AVRDUDEMCU) $(DUDEFLAGS) -U flash:w:$(BUILD)/tc_avr_$${target}.hex; \
 	done
 
+spec: avr
+	for target in driver display; do \
+		echo -e "\033[1;33m  Compiled $$target is $$(cat $(BUILD)/tc_avr_$${target}.hex | wc -c) bytes\033[0m"; \
+	done
+
 clean:
 	rm -rf $(AVR_DIR) $(DESKTOP_DIR)
 	rm -f $(BUILD)/tc_desktop $(BUILD)/tc_avr_display.hex $(BUILD)/tc_avr_driver.hex
