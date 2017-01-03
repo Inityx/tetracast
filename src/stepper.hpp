@@ -29,7 +29,7 @@ class Stepper {
             _delay_us(2);
         }
 
-        void step(int16_t steps) {
+        void rotate(int16_t steps) {
             uint16_t absteps = abs(steps);
             fastdw <pin_dir> (steps > 0); //set rotation direction
             for(; absteps; absteps--)

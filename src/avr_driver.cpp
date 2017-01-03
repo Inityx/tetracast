@@ -7,8 +7,7 @@
 //this version of the driver software will use 2 stepper motors
 //driven by Pololu A49888 stepper motor drivers
 //
-//currently it's just full of a bunch of experimental crap
-
+//note: currently just blinks an LED
 
 
 
@@ -31,6 +30,9 @@ int main()
 
     while(1)
     {
+        myStepper.enable();
+        myStepper.rotate(200);
+        myStepper.disable();
         fastdw<led>(1);
         _delay_ms(500);
         fastdw<led>(0);
