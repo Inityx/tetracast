@@ -1,5 +1,4 @@
-#define _SFR_ASM_COMPAT 1
-#include <avr/io.h>
+#include "fastio.hpp"
 #include <util/delay.h>
 
 //memory and computing speed are tight.
@@ -9,41 +8,20 @@
 //
 //currently it's just full of a bunch of experimental crap
 
-template <int p, int i>
-inline void faston()
-{
-	asm volatile("sbi %0, %1\n":: "I" (_SFR_IO_ADDR(p)), "M" (i));
-}
 
-inline volatile uint8_t& to_reg(uint8_t reg) {
-	  return *reinterpret_cast<volatile uint8_t*>(reg);
-}
-template <int p, int i>
-inline void fastdw(bool v)
-{
-	if(v)
-		asm volatile("sbi %0, %1\n":: "I" (_SFR_IO_ADDR(p)), "M" (i));
-	else
-		asm volatile("cbi %0, %1\n":: "I" (_SFR_IO_ADDR(p)), "M" (i));
-
-}
-
-template <int p, int i>
-inline void fastoff()
-{
-	asm volatile(
-			"cbi %0, %1\n":: "I" (_SFR_IO_ADDR(p)), "M" (i));
-}
 
 
 int main()
 {
+	Pin led = to_pin(PORTB, PB5);
+
 	to_reg(DDRB) |= _BV(5);
+
 	while(1)
 	{
-		fastdw<PORTB, PB5>(1);
+		fastdw<led>(1);
 		_delay_ms(500);
-		fastdw<PORTB, PB5>(0);
+		fastdw<led>(0);
 		_delay_ms(500);
 	}
 }
