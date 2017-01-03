@@ -1,4 +1,5 @@
 #include "fastio.hpp"
+#include "stepper.hpp"
 #include <util/delay.h>
 
 //memory and computing speed are tight.
@@ -13,16 +14,27 @@
 
 int main()
 {
-	Pin led = to_pin(PORTB, PB5);
+    Pin led = to_pin(PORTB, PB5);
 
-	to_reg(DDRB) |= _BV(5);
+    Pin 
+        en  = to_pin(PORTB, PB2),
+        clk = to_pin(PORTB, PB3),
+        dir = to_pin(PORTB, PB4);
 
-	while(1)
-	{
-		fastdw<led>(1);
-		_delay_ms(500);
-		fastdw<led>(0);
-		_delay_ms(500);
-	}
+    Stepper <en, clk, dir> myStepper;
+
+    myStepper.init();
+
+
+    fastpm<led>(OUTPUT);
+    
+
+    while(1)
+    {
+        fastdw<led>(1);
+        _delay_ms(500);
+        fastdw<led>(0);
+        _delay_ms(500);
+    }
 }
 
