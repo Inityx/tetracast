@@ -30,8 +30,8 @@ void setup() {
   pinMode(7, OUTPUT);
 }
 enum Pen : uint8_t {
-  UP = LOW,
-  DOWN = HIGH
+  UP = HIGH,
+  DOWN = LOW
 };
 void pen(uint8_t p)
 {
@@ -138,7 +138,7 @@ void loop() {
 //      }
     }
     microtate(steppers, netDelta * (-jump_size));
-    Step4988::del = Step4988::del * 98  / 100;
+    //Step4988::del = Step4988::del * 98  / 100;
     if(Step4988::del < 140)
       Step4988::del = 1000;
 //    ystepper.microtate(-jumpsize * netDelta.y);

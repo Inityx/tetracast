@@ -1,9 +1,9 @@
 #include "step4988.h"
-long Step4988::del = 800;
+long Step4988::del = 700;
 void Step4988::rotate(int16_t deg)
 {
   enable();
-  digitalWrite(dirPin, deg < 0);
+  digitalWrite(dirPin, deg > 0);
   for (int16_t i = 0; i < abs(deg * 200 / 360); i++)
   {
     digitalWrite(stepPin, HIGH);
@@ -14,7 +14,7 @@ void Step4988::rotate(int16_t deg)
 void Step4988::microtate(long deg)
 {
   enable();
-  digitalWrite(dirPin, deg < 0);
+  digitalWrite(dirPin, deg > 0);
   for (long i = 0; i < abs(deg); i++)
   {
     digitalWrite(stepPin, HIGH);
