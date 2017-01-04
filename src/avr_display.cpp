@@ -1,5 +1,5 @@
-#include "fastio.hpp"
-#include "arduino_pins.hpp"
+#include "avr_aux/fastio.hpp"
+#include "avr_aux/arduino_pins.hpp"
 #include <util/delay.h>
 #ifndef _BV
 #define _BV(x) (1<<(x))

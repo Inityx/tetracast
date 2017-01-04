@@ -1,5 +1,5 @@
-#include "fastio.hpp"
-#include "stepper.hpp"
+#include "avr_aux/fastio.hpp"
+#include "avr_aux/stepper.hpp"
 #include <util/delay.h>
 
 //memory and computing speed are tight.

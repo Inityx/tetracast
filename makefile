@@ -56,7 +56,7 @@ $(BUILD)/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_a
 
 # AVR
 avr: 
-include src/avrdevs.mk
+include avrdevs.mk
 avr: CXX=$(ACXX)
 avr: CFLAGS=$(ACFLAGS)
 avr: $(BUILD)/tc_avr_driver.hex $(BUILD)/tc_avr_display.hex
