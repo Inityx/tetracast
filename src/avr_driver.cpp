@@ -30,9 +30,6 @@ int main()
 
     while(1)
     {
-        myStepper.enable();
-        myStepper.rotate(200);
-        myStepper.disable();
         fastdw<led>(1);
         _delay_ms(500);
         fastdw<led>(0);

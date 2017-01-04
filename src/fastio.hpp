@@ -6,11 +6,11 @@
 
 typedef const uint16_t Pin;
 //#define Pin constexpr uint16_t
-#define to_pin(port,pin) ((port << 8) | pin)
+#define to_pin(port,pin) (Pin)(((Pin)(port) << 8) | pin)
 #define p_port(pin) ((pin >> 8) - 0)
 #define p_ddr(pin)  ((pin >> 8) - 1)
 #define p_pin(pin)  ((pin >> 8) - 2)
-#define p_bit(pin)   (pin & 0x03)
+#define p_bit(pin)   (pin & 0x07)
 #define OUTPUT 1
 #define INPUT 0
 

@@ -17,15 +17,8 @@ WNO_DESKTOP=-Wno-conversion -Wno-switch-enum
 
 # AVR compilation settings
 ACXX=avr-g++
-CPUFREQ=16000000
-MCU=atmega328p
-ACFLAGS=--std=c++11 -Os -DF_CPU=$(CPUFREQ)UL -mmcu=$(MCU) -lm -DAVR
-OBJ2HEX=avr-objcopy
-AVRDUDEMCU=m328p
-AVRPORT=/dev/ttyACM0
-AVRBAUD=115200
-DUDEFLAGS=-p $(AVRDUDEMCU) -c arduino -P $(AVRPORT) -b $(AVRBAUD)
-AVRDUDE=avrdude
+AVR_PLATFORM=UNO
+DUDETARGETS=driver display
 
 
 # Orchestration
@@ -37,13 +30,13 @@ run: desktop
 	$(BUILD)/tc_desktop
 
 dude: avr
-	for target in driver display; do \
+	for target in $(DUDETARGETS); do \
 	    echo -n "Connect $$target chip and press enter... "; read; \
 	    sudo avrdude -p $(AVRDUDEMCU) $(DUDEFLAGS) -U flash:w:$(BUILD)/tc_avr_$${target}.hex; \
 	done
 
 spec: avr
-	for target in driver display; do \
+	for target in $(DUDETARGETS); do \
 		echo -e "\033[1;33m  Compiled $$target is $$(cat $(BUILD)/tc_avr_$${target}.hex | wc -c) bytes\033[0m"; \
 	done
 
@@ -62,6 +55,8 @@ $(BUILD)/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_a
 
 
 # AVR
+avr: 
+include src/avrdevs.mk
 avr: CXX=$(ACXX)
 avr: CFLAGS=$(ACFLAGS)
 avr: $(BUILD)/tc_avr_driver.hex $(BUILD)/tc_avr_display.hex

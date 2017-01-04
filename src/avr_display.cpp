@@ -1,13 +1,26 @@
-#include <avr/io.h>
+#include "fastio.hpp"
+#include "arduino_pins.hpp"
 #include <util/delay.h>
+#ifndef _BV
+#define _BV(x) (1<<(x))
+#endif
 
 int main()
 {
-	DDRB |= _BV(5);
+    Pin led   = arduino::PIN[13];
+    Pin laser = arduino::PIN[7];
+
+    fastpm<led>(OUTPUT);
+    //fastpm<laser>(OUTPUT);
+
 	while(1)
 	{
-		PORTB ^= _BV(5);
-		_delay_ms(500);
+        fastdw <led>   (1);
+        //fastdw <laser> (0);
+		_delay_us(200);
+        fastdw <led>   (0);
+        //fastdw <laser> (1);
+		_delay_us(300);
 	}
 }
 
