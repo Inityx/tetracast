@@ -71,7 +71,8 @@ int main() {
                 window.clear(sf::Color::Black);
                 // TODO: draw content
                 draw_dots(window, SCALE_FACTOR);
-                draw_blocks(window, SCALE_FACTOR, game);
+                draw_block(window, SCALE_FACTOR, game.get_piece());
+                draw_block_vector(window, SCALE_FACTOR, game.get_blocks());
                 break;
         }
         
