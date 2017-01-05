@@ -13,7 +13,7 @@ TETRACAST_AVR=$(addprefix $(AVR_DIR)/, $(TETRACAST))
 DCXX=clang++
 DCFLAGS=--std=c++11 -Weverything -g
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
-WNO_DESKTOP=-Wno-conversion -Wno-switch-enum
+WNO_DESKTOP=-Wno-conversion -Wno-switch-enum -Wno-c++98-compat
 
 # AVR compilation settings
 ACXX=avr-g++
@@ -47,7 +47,7 @@ clean:
 
 # Desktop
 desktop: CXX=$(DCXX)
-desktop: CFLAGS=$(DCFLAGS)
+desktop: CFLAGS=$(DCFLAGS) $(WNO_DESKTOP)
 desktop: $(BUILD)/tc_desktop
 
 $(BUILD)/tc_desktop: $(TETRACAST_DESKTOP) $(SRC)/sfml_frontend.cpp $(SRC)/sfml_aux.hpp
