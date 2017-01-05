@@ -21,11 +21,14 @@ namespace tc {
     public:
         BlockVector() { size = 0; }
         
-        Block& operator[](bvec_index index) { return storage[index]; }
-        inline bvec_index get_size() { return size; }
+        // Block& operator[](bvec_index index) { return storage[index]; }
+        // inline bvec_index get_size() { return size; }
         
         void append(const Block&);
         void collapse(uint8_t, int8_t [MAX_COLLAPSE]);
+        
+        inline Block* begin() { return storage; }
+        inline Block* end() { return &(storage[size]); }
     };
 }
 
