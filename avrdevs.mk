@@ -7,8 +7,7 @@ ifeq ($(AVR_PLATFORM), UNO)
     DUDEFLAGS=-p $(AVRDUDEMCU) -c arduino -P $(AVRPORT) -b $(AVRBAUD)
 endif
 ifndef AVR_PLATFORM
-    echo "AVR_PLATFORM undefined. I don't know what device to build this for."
-    echo "terminating ungracefully."
+    $(error No AVR_PLATFORM specified. Not sure what device you want to program.)
 endif
 
 
