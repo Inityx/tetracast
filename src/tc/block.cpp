@@ -2,7 +2,7 @@
 
 namespace tc {
     // Private methods
-    uint8_t Block::square(square_index i) {
+    uint8_t Block::square(const square_index i) const {
         return NYBBLE_BITS * (
             ((i & 0x02) ? this->storage2 : this->storage1 ) >> ( 0x01 - (i & 0x01) )
         );
@@ -22,14 +22,7 @@ namespace tc {
     // Constructors
     Block::Block() { this->blank(); }
     
-    Block::Block(const Block& src) {
-        this->storage1 = src.storage1;
-        this->storage2 = src.storage2;
-        this->coords   = src.coords;
-        this->rotation = src.rotation;
-    }
-    
-    Block::Block(uint16_t shape, uint8_t start_coords, uint8_t start_rot) {
+    Block::Block(const uint16_t shape, const uint8_t start_coords, const uint8_t start_rot) {
         this->storage1 = static_cast<uint8_t>(shape >> 8);
         this->storage2 = static_cast<uint8_t>(shape);
         this->coords   = start_coords;
@@ -37,33 +30,33 @@ namespace tc {
     }
 
     // Accessors
-    uint8_t Block::x(square_index i) { return (this->square(i) >> 2) & 0x03; }
-    uint8_t Block::y(square_index i) { return (this->square(i) >> 1) & 0x01; }
-    uint8_t Block::e(square_index i) { return (this->square(i) >> 0) & 0x01; }
-    int8_t Block::global_x(square_index i) { // FIXME: may need tweaking
+    uint8_t Block::x(const square_index i) const { return (this->square(i) >> 2) & 0x03; }
+    uint8_t Block::y(const square_index i) const { return (this->square(i) >> 1) & 0x01; }
+    uint8_t Block::e(const square_index i) const { return (this->square(i) >> 0) & 0x01; }
+    int8_t Block::global_x(const square_index i) const { // FIXME: may need tweaking
         return this->loc_x() +                                 // block coord
             ( (this->rotation<2) ? int8_t(1) : int8_t(-1) ) *  // plus or minus
             ( (this->rotation%2) ? this->x(i) : this->y(i) );  // square coord
     }
-    int8_t Block::global_y(square_index i) { // FIXME: may need tweaking
+    int8_t Block::global_y(const square_index i) const { // FIXME: may need tweaking
         return this->loc_y() +                                 // block coord
             ( (this->rotation<2) ? int8_t(1) : int8_t(-1) ) *  // plus or minus
             ( (this->rotation%2) ? this->y(i) : this->x(i) );  // square coord
     }
     
-    bool Block::is_gone() {
+    bool Block::is_gone() const {
         return !(
             (this->storage1 & 0x11) ||
             (this->storage2 & 0x11)
         );
     }
 
-    uint8_t Block::loc_x() { return (this->coords & 0xF0) >> NYBBLE_BITS; }
-    uint8_t Block::loc_y() { return (this->coords & 0x0F); }
+    uint8_t Block::loc_x() const { return (this->coords & 0xF0) >> NYBBLE_BITS; }
+    uint8_t Block::loc_y() const { return (this->coords & 0x0F); }
 
     // Mutators
     void Block::move_down() { this->move_down(1); }
-    void Block::move_down(uint8_t n) {
+    void Block::move_down(const uint8_t n) {
         if(n == 0) return;
 
         this->coords = (
@@ -79,14 +72,5 @@ namespace tc {
         this->storage2 = 0;
         this->coords = 0;
         this->rotation = 0;
-    }
-    
-    // Operators
-    Block& Block::operator=(const Block& rhs) {
-        this->storage1 = rhs.storage1;
-        this->storage2 = rhs.storage2;
-        this->coords   = rhs.coords;
-        this->rotation = rhs.rotation;
-        return *this;
     }
 }

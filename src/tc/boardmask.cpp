@@ -10,11 +10,9 @@ namespace tc {
         this->storage.fill({{0}});
     }
     
-    uint8_t BoardMask::collapse(array<int8_t, MAX_COLLAPSE> buffer) {
-        uint8_t skip;
-        
+    uint8_t BoardMask::collapse(array<int8_t, MAX_COLLAPSE>& buffer) {
         // write indeces to buffer
-        skip = 0;
+        auto skip = 0;
         for(boardmask_index row=0; row<GAME_HEIGHT; row++)
             for(boardmask_index byte=0; byte<STORE_BYTES; byte++)
                 if(this->storage[byte][row] == static_cast<uint8_t>(GAME_W_BITMASK >> byte)) {
@@ -35,15 +33,15 @@ namespace tc {
             if(skip == 0)
                 continue;
 
-            for(uint8_t byte=0; byte<STORE_BYTES; byte++)
-                this->storage[byte][row] = this->storage[byte][row+skip];
+            for (auto& byte : this->storage)
+                byte[row] = byte[row+skip];
         }
         
         // return number of collapsed rows
         return skip;
     }
     
-    bool BoardMask::get(boardmask_index row, boardmask_index column) {
+    bool BoardMask::get(boardmask_index row, boardmask_index column) const {
         // TODO: space above board should always be false
 
         // TODO: get board pixel

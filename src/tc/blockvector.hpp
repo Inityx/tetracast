@@ -14,25 +14,32 @@ typedef uint16_t bvec_index;
 
 namespace tc {
     class BlockVector {
+    public:
+        typedef std::array<Block, MAX_BLK> Storage;
+
     private:
-        std::array<Block, MAX_BLK> storage;
+        Storage storage;
         bvec_index size;
         
         void shrink();
 
     public:
         BlockVector() { size = 0; }
-        
+    
         
         void append(const Block&);
-        void collapse(uint8_t, std::array<int8_t, MAX_COLLAPSE>);
+        void collapse(uint8_t, const std::array<int8_t, MAX_COLLAPSE>&&);
         
         // Operators
-        Block& operator[](bvec_index);
+        Block& operator[](const bvec_index);
+        const Block& operator[](const bvec_index) const;
 
         // Ranged-for interface
-        Block* begin();
-        Block* end();
+        Storage::iterator begin();
+        Storage::iterator end();
+
+        Storage::const_iterator begin() const;
+        Storage::const_iterator end() const;
     };
 }
 

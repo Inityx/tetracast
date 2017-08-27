@@ -23,7 +23,7 @@ namespace tc {
         bool try_sink_piece();
         bool try_place_piece();
         void collapse_lines();
-        void new_piece(uint8_t);
+        void new_piece(const uint8_t);
     
     public:
         enum State {
@@ -42,12 +42,12 @@ namespace tc {
         
         Game() { this->tick_ms = INITIAL_TICK_MS; }
         
-        State try_tick(uint16_t, uint8_t);
-        void try_move(Move);
+        State try_tick(const uint16_t, const uint8_t);
+        void try_move(const Move);
 
         // Debug
-        BlockVector& get_blocks() { return blocks; }
-        Block& get_piece() { return piece; }
+        const BlockVector& get_blocks() const { return this->blocks; }
+        const Block& get_piece() const { return this->piece; }
     };
 }
 

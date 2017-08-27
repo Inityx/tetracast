@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <utility>
 
 #include "game.hpp"
 #include "block.hpp"
@@ -11,13 +12,16 @@ namespace tc {
         if (this->piece.is_gone())
             return false;
 
+        // For each square in the piece
         for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
             printf("Square %d, y is %d\n", square_i, this->piece.global_y(square_i));
 
+            // if is at board bottom
             if (this->piece.global_y(square_i) == 0)
                 return false;
-
-            bool boardmask_below = this->boardmask.get(
+            
+            // if is blocked on the bottom
+            const auto boardmask_below = this->boardmask.get(
                 this->piece.global_y(square_i) - 1,
                 this->piece.global_x(square_i)
             );
@@ -36,12 +40,12 @@ namespace tc {
         return false;
     }
 
-    void Game::new_piece(uint8_t seed) {
+    void Game::new_piece(const uint8_t seed) {
         puts("Game new piece");
+        const auto selection = seed % (sizeof Block::shapes);
+        
         this->piece = Block(
-            Block::shapes[
-                seed % (sizeof Block::shapes)
-            ],
+            Block::shapes[selection],
             0x4F,
             0x00
         );
@@ -50,7 +54,7 @@ namespace tc {
     void Game::collapse_lines() {}
 
     // Mutators
-    Game::State Game::try_tick(uint16_t elapsed, uint8_t random_seed) {
+    Game::State Game::try_tick(const uint16_t elapsed, const uint8_t random_seed) {
         if(elapsed < this->tick_ms)
             return NO_ACTION;
         
@@ -72,8 +76,8 @@ namespace tc {
             puts("Placed piece");
             std::array<int8_t, MAX_COLLAPSE> lines;
             
-            uint8_t count = this->boardmask.collapse(lines);
-            if(count > 0) this->blocks.collapse(count, lines);
+            const auto count = this->boardmask.collapse(lines);
+            if(count > 0) this->blocks.collapse(count, std::move(lines));
             
             this->piece.blank();
             return TICK;
@@ -84,7 +88,7 @@ namespace tc {
     }
     
     
-    void Game::try_move(Game::Move move) {
+    void Game::try_move(const Game::Move move) {
         // try to move piece
         switch(move){
             case MOV_LEFT:

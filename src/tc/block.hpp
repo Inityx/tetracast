@@ -39,7 +39,7 @@ namespace tc {
         uint8_t coords;
         uint8_t rotation;
         
-        uint8_t square(square_index i);
+        uint8_t square(square_index i) const;
 
     public:
         // Constants
@@ -47,31 +47,27 @@ namespace tc {
         
         // Constructors
         Block();
-        Block(const Block& src);
         Block(uint16_t, uint8_t, uint8_t);
         
         // Accessors
-        uint8_t x(square_index i);
-        uint8_t y(square_index i);
-        uint8_t e(square_index i);
-        int8_t global_x(square_index i);
-        int8_t global_y(square_index i);
+        uint8_t x(const square_index i) const;
+        uint8_t y(const square_index i) const;
+        uint8_t e(const square_index i) const;
+        int8_t global_x(const square_index i) const;
+        int8_t global_y(const square_index i) const;
         
-        bool is_gone();
+        bool is_gone() const;
         
-        uint8_t loc_x();
-        uint8_t loc_y();
+        uint8_t loc_x() const;
+        uint8_t loc_y() const;
         
         // Mutators
         void move_down();
-        void move_down(uint8_t);
+        void move_down(const uint8_t);
         void move_left();
         void move_right();
 
         void blank();
-        
-        // Operators
-        Block& operator=(const Block&);
     };
 }
 

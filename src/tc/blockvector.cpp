@@ -11,16 +11,16 @@ namespace tc {
         this->size++;
     }
     
-    void BlockVector::collapse(uint8_t line_count, array<int8_t, MAX_COLLAPSE> lines) {
-        for(Block& block : *this) {
+    void BlockVector::collapse(const uint8_t line_count, const array<int8_t, MAX_COLLAPSE>&& lines) {
+        for(auto& block : *this) {
             for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
                 // TODO: implement piece squashing
                 
                 // block must move location down the number of lines below it
-                uint8_t accum = 0;
-                for(uint8_t line_i = 0; line_i < line_count; line_i++)
+                auto accum = 0;
+                for(const auto line : lines)
                     // TODO optimize if lines are guaranteed sorted
-                    if(block.loc_y() > lines[line_i])
+                    if(block.loc_y() > line)
                         accum++;
                 
                 block.move_down(accum);
@@ -55,9 +55,13 @@ namespace tc {
     }
 
     // Operators
-    Block& BlockVector::operator[](bvec_index i) { return storage[i]; }
+    Block& BlockVector::operator[](const bvec_index i) { return this->storage[i]; }
+    const Block& BlockVector::operator[](const bvec_index i) const { return this->storage[i]; }
 
     // Ranged-for interface
-    Block* BlockVector::begin() { return this->storage.begin(); }
-    Block* BlockVector::end() { return this->storage.begin() + this->size; }
+    BlockVector::Storage::iterator BlockVector::begin() { return this->storage.begin(); }
+    BlockVector::Storage::iterator BlockVector::end() { return this->storage.begin() + this->size; }
+
+    BlockVector::Storage::const_iterator BlockVector::begin() const { return this->storage.begin(); }
+    BlockVector::Storage::const_iterator BlockVector::end() const { return this->storage.begin() + this->size; }
 }

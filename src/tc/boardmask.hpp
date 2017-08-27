@@ -24,13 +24,14 @@ namespace tc {
     typedef int8_t boardmask_index;
     
     class BoardMask {
+    private:
         std::array<std::array<uint8_t, GAME_HEIGHT>, STORE_BYTES> storage;
         
     public:
         BoardMask();
         
-        uint8_t collapse(std::array<int8_t, MAX_COLLAPSE>);
-        bool get(boardmask_index, boardmask_index);
+        uint8_t collapse(std::array<int8_t, MAX_COLLAPSE>&);
+        bool get(boardmask_index, boardmask_index) const;
         void set(boardmask_index, boardmask_index);
     };
 }
