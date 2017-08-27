@@ -2,6 +2,7 @@
 #define BOARDMASK
 
 #include <stdint.h>
+#include <array>
 
 #include "gamedefs.h"
 
@@ -23,12 +24,12 @@ namespace tc {
     typedef int8_t boardmask_index;
     
     class BoardMask {
-        uint8_t storage[STORE_BYTES][GAME_HEIGHT];
+        std::array<std::array<uint8_t, GAME_HEIGHT>, STORE_BYTES> storage;
         
     public:
         BoardMask();
         
-        uint8_t collapse(int8_t [MAX_COLLAPSE]);
+        uint8_t collapse(std::array<int8_t, MAX_COLLAPSE>);
         bool get(boardmask_index, boardmask_index);
         void set(boardmask_index, boardmask_index);
     };

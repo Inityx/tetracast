@@ -2,6 +2,7 @@
 #define BLOCKVECTOR
 
 #include "block.hpp"
+#include <array>
 #include <stdint.h>
 
 #include "gamedefs.h"
@@ -13,7 +14,8 @@ typedef uint16_t bvec_index;
 
 namespace tc {
     class BlockVector {
-        Block storage[MAX_BLK];
+    private:
+        std::array<Block, MAX_BLK> storage;
         bvec_index size;
         
         void shrink();
@@ -21,14 +23,16 @@ namespace tc {
     public:
         BlockVector() { size = 0; }
         
-        // Block& operator[](bvec_index index) { return storage[index]; }
-        // inline bvec_index get_size() { return size; }
         
         void append(const Block&);
-        void collapse(uint8_t, int8_t [MAX_COLLAPSE]);
+        void collapse(uint8_t, std::array<int8_t, MAX_COLLAPSE>);
         
-        inline Block* begin() { return storage; }
-        inline Block* end() { return &(storage[size]); }
+        // Operators
+        Block& operator[](bvec_index);
+
+        // Ranged-for interface
+        Block* begin();
+        Block* end();
     };
 }
 

@@ -1,13 +1,17 @@
 #include "blockvector.hpp"
+#include <array>
+#include <cassert>
 
 namespace tc {
+    using std::array;
+
     void BlockVector::append(const Block& new_block) {
-        if(size == MAX_BLK) size = 0;
-        storage[size] = new_block;
-        size++;
+        assert(this->size <= MAX_BLK);
+        *(this->storage.end()) = new_block;
+        this->size++;
     }
     
-    void BlockVector::collapse(uint8_t line_count, int8_t lines[MAX_COLLAPSE]) {
+    void BlockVector::collapse(uint8_t line_count, array<int8_t, MAX_COLLAPSE> lines) {
         for(Block& block : *this) {
             for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
                 // TODO: implement piece squashing
@@ -23,28 +27,37 @@ namespace tc {
             }
         }
         
-        shrink();
+        this->shrink();
     }
     
     void BlockVector::shrink() {
-        if(size == 0) return;
+        if(this->size == 0)
+            return;
         
-        Block* start = &storage[0];
-        Block* end = &storage[size-1];
+        Block* start = this->storage.begin();
+        Block* last = this->storage.end() - 1;
 
-        while(end->is_gone()) {
-            end--;
-            size--;
+        // Bring size to last element
+        while(last->is_gone()) {
+            last--;
+            this->size--;
         }
         
-        while(start != end) {
+        while(start != last) {
             if(start->is_gone()) {
-                *start = *end;
-                end--;
-                size--;
-                if(start == end) break;
+                *start = *last;
+                last--;
+                this->size--;
+                if(start == last) break;
             }
             start++;
         }
     }
+
+    // Operators
+    Block& BlockVector::operator[](bvec_index i) { return storage[i]; }
+
+    // Ranged-for interface
+    Block* BlockVector::begin() { return this->storage.begin(); }
+    Block* BlockVector::end() { return this->storage.begin() + this->size; }
 }

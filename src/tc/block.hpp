@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 // Block storage bitmap
 /*
   +---+-- MSB
@@ -30,56 +29,49 @@
 #define BLOCK_SQUARES 4
 #define NYBBLE_BITS 4
 
-
 namespace tc {
     typedef uint8_t square_index;
     
     class Block {
+    private:
         uint8_t storage1;
         uint8_t storage2;
         uint8_t coords;
         uint8_t rotation;
         
-        inline uint8_t square(square_index i) { return ((i&0x02)?storage2:storage1) >> (0x01-(i&0x01))*NYBBLE_BITS; }
-        
+        uint8_t square(square_index i);
+
     public:
+        // Constants
         static const uint16_t shapes[7];
         
+        // Constructors
         Block();
         Block(const Block& src);
         Block(uint16_t, uint8_t, uint8_t);
         
-        inline uint8_t x(square_index i) { return (square(i) >> 2) & 0x03; }
-        inline uint8_t y(square_index i) { return (square(i) >> 1) & 0x01; }
-        inline uint8_t e(square_index i) { return (square(i) >> 0) & 0x01; }
-        inline int8_t global_x(square_index i) { // FIXME: may need tweaking
-            return loc_x() +                              // block coord
-                ((rotation<2)?int8_t(1):int8_t(-1)) *     // plus or minus
-                ((rotation%2)?x(i):y(i));                 // square coord
-        }
-        inline int8_t global_y(square_index i) { // FIXME: may need tweaking
-            return loc_y() +                              // block coord
-                ((rotation<2)?int8_t(1):int8_t(-1)) *     // plus or minus
-                ((rotation%2)?y(i):x(i));                 // square coord
-        }
+        // Accessors
+        uint8_t x(square_index i);
+        uint8_t y(square_index i);
+        uint8_t e(square_index i);
+        int8_t global_x(square_index i);
+        int8_t global_y(square_index i);
         
-        inline bool is_gone() {
-            return !(
-                (storage1 & 0x11) ||
-                (storage2 & 0x11)
-            );
-        }
+        bool is_gone();
         
-        inline uint8_t loc_x() { return (coords&0xF0) >> NYBBLE_BITS; }
-        inline uint8_t loc_y() { return coords&0x0F; }
+        uint8_t loc_x();
+        uint8_t loc_y();
         
+        // Mutators
+        void move_down();
         void move_down(uint8_t);
         void move_left();
         void move_right();
+
+        void blank();
         
-        Block operator=(const Block&);
-        
-        inline void remove() { storage1 = storage2 = coords = rotation = 0; }
+        // Operators
+        Block& operator=(const Block&);
     };
 }
 

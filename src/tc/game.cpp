@@ -4,66 +4,29 @@
 #include "block.hpp"
 
 namespace tc {
-    void Game::new_piece(uint8_t seed) {
-        puts("Game new piece");
-        piece = Block(
-            Block::shapes[
-                seed % (sizeof Block::shapes)
-            ],
-            0x4F,
-            0x00
-        );
-    }
-    
-    Game::State Game::try_tick(uint16_t elapsed, uint8_t random_seed) {
-        if(elapsed < tick_ms) return NO_ACTION;
-        
-        if(tick_ms > MINIMUM_TICK) tick_ms--;
-        
-        if(piece.is_gone()) {
-            puts("Piece is gone");
-            new_piece(random_seed);
-            return TICK;
-        }
-        
-        if(try_sink_piece()) {
-            puts("Sunk piece");
-            return TICK;
-        }
-        
-        if(try_place_piece()) {
-            puts("Placed piece");
-            int8_t lines[MAX_COLLAPSE];
-            uint8_t count;
-            
-            count = boardmask.collapse(lines);
-            if(count > 0) blocks.collapse(count, lines);
-            
-            piece.remove();
-            return TICK;
-        }
-        
-        puts("Could not place piece");
-        return LOSE;
-    }
-    
+    // Private
     bool Game::try_sink_piece() {
         puts("Try sink piece");
+
+        if (this->piece.is_gone())
+            return false;
+
         for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
-            printf("Square %d, y is %d\n", square_i, piece.global_y(square_i));
-            if(
-                !piece.is_gone() && (
-                    piece.global_y(square_i) == 0 ||
-                    boardmask.get(
-                        piece.global_y(square_i) - 1,
-                        piece.global_x(square_i)
-                    )
-                )
-            )
+            printf("Square %d, y is %d\n", square_i, this->piece.global_y(square_i));
+
+            if (this->piece.global_y(square_i) == 0)
+                return false;
+
+            bool boardmask_below = this->boardmask.get(
+                this->piece.global_y(square_i) - 1,
+                this->piece.global_x(square_i)
+            );
+
+            if(boardmask_below)
                 return false;
         }
         
-        piece.move_down(1);
+        this->piece.move_down();
         return true;
     }
     
@@ -72,6 +35,54 @@ namespace tc {
         // else place block, and return true
         return false;
     }
+
+    void Game::new_piece(uint8_t seed) {
+        puts("Game new piece");
+        this->piece = Block(
+            Block::shapes[
+                seed % (sizeof Block::shapes)
+            ],
+            0x4F,
+            0x00
+        );
+    }
+    
+    void Game::collapse_lines() {}
+
+    // Mutators
+    Game::State Game::try_tick(uint16_t elapsed, uint8_t random_seed) {
+        if(elapsed < this->tick_ms)
+            return NO_ACTION;
+        
+        if(this->tick_ms > MINIMUM_TICK)
+            this->tick_ms--;
+        
+        if(this->piece.is_gone()) {
+            puts("Piece is gone");
+            this->new_piece(random_seed);
+            return TICK;
+        }
+        
+        if(this->try_sink_piece()) {
+            puts("Sunk piece");
+            return TICK;
+        }
+        
+        if(this->try_place_piece()) {
+            puts("Placed piece");
+            std::array<int8_t, MAX_COLLAPSE> lines;
+            
+            uint8_t count = this->boardmask.collapse(lines);
+            if(count > 0) this->blocks.collapse(count, lines);
+            
+            this->piece.blank();
+            return TICK;
+        }
+        
+        puts("Could not place piece");
+        return LOSE;
+    }
+    
     
     void Game::try_move(Game::Move move) {
         // try to move piece

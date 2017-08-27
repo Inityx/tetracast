@@ -14,6 +14,7 @@
 
 namespace tc {
     class Game {
+    private:
         BoardMask boardmask;
         BlockVector blocks;
         Block piece;
@@ -39,14 +40,14 @@ namespace tc {
             DROP
         };
         
-        Game() { tick_ms = INITIAL_TICK_MS; }
-        
-        // Debug
-        BlockVector& get_blocks() { return blocks; }
-        Block& get_piece() { return piece; }
+        Game() { this->tick_ms = INITIAL_TICK_MS; }
         
         State try_tick(uint16_t, uint8_t);
         void try_move(Move);
+
+        // Debug
+        BlockVector& get_blocks() { return blocks; }
+        Block& get_piece() { return piece; }
     };
 }
 
