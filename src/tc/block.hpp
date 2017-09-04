@@ -1,8 +1,10 @@
 #ifndef BLOCK
 #define BLOCK
 
-#include <stdint.h>
+#include "gamedefs.h"
 
+#include <stdint.h>
+#include <array>
 // Block storage bitmap
 /*
   +---+-- MSB
@@ -27,7 +29,6 @@
 */
 
 #define BLOCK_SQUARES 4
-#define NYBBLE_BITS 4
 
 namespace tc {
     typedef uint8_t square_index;
@@ -39,22 +40,27 @@ namespace tc {
         uint8_t coords;
         uint8_t rotation;
         
-        uint8_t square(square_index i) const;
+        uint8_t square(square_index const) const;
 
     public:
         // Constants
-        static const uint16_t shapes[7];
+        static std::array<uint16_t, 7> const SHAPES;
+        static uint8_t const START_POSITION{ (((GAME_WIDTH/2)-1)<<NYBBLE_BITS) | GAME_HEIGHT };
+        static uint8_t const START_ROTATION{0x00};
         
         // Constructors
         Block();
-        Block(uint16_t, uint8_t, uint8_t);
+        Block(uint16_t const, uint8_t const, uint8_t const);
+        
+        // Factories
+        static Block random(uint8_t const);
         
         // Accessors
-        uint8_t x(const square_index i) const;
-        uint8_t y(const square_index i) const;
-        uint8_t e(const square_index i) const;
-        int8_t global_x(const square_index i) const;
-        int8_t global_y(const square_index i) const;
+        uint8_t x(square_index const) const;
+        uint8_t y(square_index const) const;
+        uint8_t e(square_index const) const;
+        int8_t global_x(square_index const) const;
+        int8_t global_y(square_index const) const;
         
         bool is_gone() const;
         
@@ -63,7 +69,7 @@ namespace tc {
         
         // Mutators
         void move_down();
-        void move_down(const uint8_t);
+        void move_down(uint8_t const);
         void move_left();
         void move_right();
 

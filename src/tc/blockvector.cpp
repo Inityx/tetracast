@@ -2,23 +2,26 @@
 #include <array>
 #include <cassert>
 
-namespace tc {
-    using std::array;
+using std::array;
 
-    void BlockVector::append(const Block& new_block) {
+namespace tc {
+    void BlockVector::append(Block const& new_block) {
         assert(this->size <= MAX_BLK);
         *(this->storage.end()) = new_block;
         this->size++;
     }
     
-    void BlockVector::collapse(const uint8_t line_count, const array<int8_t, MAX_COLLAPSE>&& lines) {
-        for(auto& block : *this) {
-            for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
+    void BlockVector::collapse(
+        uint8_t const line_count,
+        CollapseBuffer const& lines
+    ) {
+        for(auto&& block : *this) {
+            for(square_index square_i{0}; square_i<BLOCK_SQUARES; square_i++) {
                 // TODO: implement piece squashing
                 
                 // block must move location down the number of lines below it
-                auto accum = 0;
-                for(const auto line : lines)
+                auto accum{0};
+                for(auto const line : lines)
                     // TODO optimize if lines are guaranteed sorted
                     if(block.loc_y() > line)
                         accum++;
@@ -34,29 +37,29 @@ namespace tc {
         if(this->size == 0)
             return;
         
-        Block* start = this->storage.begin();
-        Block* last = this->storage.end() - 1;
+        auto head{ this->storage.begin() };
+        auto tail{ this->storage.end() - 1 };
 
-        // Bring size to last element
-        while(last->is_gone()) {
-            last--;
+        // Bring tail to last element
+        while(tail->is_gone()) {
+            tail--;
             this->size--;
         }
         
-        while(start != last) {
-            if(start->is_gone()) {
-                *start = *last;
-                last--;
+        // Fill holes from tail
+        while(head < tail) {
+            if(head->is_gone()) {
+                *head = *tail;
+                tail--;
                 this->size--;
-                if(start == last) break;
             }
-            start++;
+            head++;
         }
     }
 
     // Operators
-    Block& BlockVector::operator[](const bvec_index i) { return this->storage[i]; }
-    const Block& BlockVector::operator[](const bvec_index i) const { return this->storage[i]; }
+    Block& BlockVector::operator[](bvec_index const i) { return this->storage[i]; }
+    Block const& BlockVector::operator[](bvec_index const i) const { return this->storage[i]; }
 
     // Ranged-for interface
     BlockVector::Storage::iterator BlockVector::begin() { return this->storage.begin(); }

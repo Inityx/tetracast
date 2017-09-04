@@ -11,7 +11,7 @@ TETRACAST_AVR=$(addprefix $(AVR_DIR)/, $(TETRACAST))
 
 # Desktop compilation settings
 DCXX=clang++
-DCFLAGS=--std=c++11 -Weverything -g
+DCFLAGS=--std=c++11 -Weverything -Wno-missing-braces -g
 SFMLFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 WNO_DESKTOP=-Wno-conversion -Wno-switch-enum -Wno-c++98-compat
 

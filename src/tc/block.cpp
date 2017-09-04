@@ -1,15 +1,19 @@
 #include "block.hpp"
 
+#include <array>
+
+using std::array;
+
 namespace tc {
     // Private methods
-    uint8_t Block::square(const square_index i) const {
+    uint8_t Block::square(square_index const i) const {
         return NYBBLE_BITS * (
             ((i & 0x02) ? this->storage2 : this->storage1 ) >> ( 0x01 - (i & 0x01) )
         );
     }
 
     // Constants
-    const uint16_t Block::shapes[7] = {
+    array<uint16_t, 7> const Block::SHAPES {
        0x159b, // 0b0001'0101'1001'1011, // left L
        0x37b9, // 0b0011'0111'1011'1001, // right L
        0x1579, // 0b0001'0101'0111'1011, // left S
@@ -22,23 +26,37 @@ namespace tc {
     // Constructors
     Block::Block() { this->blank(); }
     
-    Block::Block(const uint16_t shape, const uint8_t start_coords, const uint8_t start_rot) {
+    Block::Block(
+        uint16_t const shape,
+        uint8_t const start_coords,
+        uint8_t const start_rot
+    ) {
         this->storage1 = static_cast<uint8_t>(shape >> 8);
         this->storage2 = static_cast<uint8_t>(shape);
         this->coords   = start_coords;
         this->rotation = start_rot;
     }
 
+    // Factories
+    Block Block::random(uint8_t const seed) {
+        auto const selection = seed % (sizeof Block::SHAPES);
+        return Block(
+            Block::SHAPES[selection],
+            Block::START_POSITION,
+            Block::START_ROTATION
+        );
+    }
+
     // Accessors
-    uint8_t Block::x(const square_index i) const { return (this->square(i) >> 2) & 0x03; }
-    uint8_t Block::y(const square_index i) const { return (this->square(i) >> 1) & 0x01; }
-    uint8_t Block::e(const square_index i) const { return (this->square(i) >> 0) & 0x01; }
-    int8_t Block::global_x(const square_index i) const { // FIXME: may need tweaking
+    uint8_t Block::x(square_index const i) const { return (this->square(i) >> 2) & 0x03; }
+    uint8_t Block::y(square_index const i) const { return (this->square(i) >> 1) & 0x01; }
+    uint8_t Block::e(square_index const i) const { return (this->square(i) >> 0) & 0x01; }
+    int8_t Block::global_x(square_index const i) const { // FIXME: may need tweaking
         return this->loc_x() +                                 // block coord
             ( (this->rotation<2) ? int8_t(1) : int8_t(-1) ) *  // plus or minus
             ( (this->rotation%2) ? this->x(i) : this->y(i) );  // square coord
     }
-    int8_t Block::global_y(const square_index i) const { // FIXME: may need tweaking
+    int8_t Block::global_y(square_index const i) const { // FIXME: may need tweaking
         return this->loc_y() +                                 // block coord
             ( (this->rotation<2) ? int8_t(1) : int8_t(-1) ) *  // plus or minus
             ( (this->rotation%2) ? this->y(i) : this->x(i) );  // square coord
@@ -56,8 +74,9 @@ namespace tc {
 
     // Mutators
     void Block::move_down() { this->move_down(1); }
-    void Block::move_down(const uint8_t n) {
-        if(n == 0) return;
+    void Block::move_down(uint8_t const n) {
+        if(n == 0)
+            return;
 
         this->coords = (
             static_cast<uint8_t>(this->loc_x() << NYBBLE_BITS) |

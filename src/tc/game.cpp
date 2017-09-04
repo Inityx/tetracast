@@ -21,10 +21,12 @@ namespace tc {
                 return false;
             
             // if is blocked on the bottom
-            const auto boardmask_below = this->boardmask.get(
-                this->piece.global_y(square_i) - 1,
-                this->piece.global_x(square_i)
-            );
+            auto const boardmask_below{
+                this->boardmask.get(
+                    this->piece.global_y(square_i) - 1,
+                    this->piece.global_x(square_i)
+                )
+            };
 
             if(boardmask_below)
                 return false;
@@ -40,21 +42,16 @@ namespace tc {
         return false;
     }
 
-    void Game::new_piece(const uint8_t seed) {
+    void Game::new_piece(uint8_t const seed) {
         puts("Game new piece");
-        const auto selection = seed % (sizeof Block::shapes);
         
-        this->piece = Block(
-            Block::shapes[selection],
-            0x4F,
-            0x00
-        );
+        this->piece = Block::random(seed);
     }
     
     void Game::collapse_lines() {}
 
     // Mutators
-    Game::State Game::try_tick(const uint16_t elapsed, const uint8_t random_seed) {
+    Game::State Game::try_tick(uint16_t const elapsed, uint8_t const random_seed) {
         if(elapsed < this->tick_ms)
             return NO_ACTION;
         
@@ -74,10 +71,10 @@ namespace tc {
         
         if(this->try_place_piece()) {
             puts("Placed piece");
-            std::array<int8_t, MAX_COLLAPSE> lines;
+            CollapseBuffer lines;
             
-            const auto count = this->boardmask.collapse(lines);
-            if(count > 0) this->blocks.collapse(count, std::move(lines));
+            auto const count = this->boardmask.collapse(lines);
+            if(count > 0) this->blocks.collapse(count, lines);
             
             this->piece.blank();
             return TICK;
@@ -88,7 +85,7 @@ namespace tc {
     }
     
     
-    void Game::try_move(const Game::Move move) {
+    void Game::try_move(Game::Move const move) {
         // try to move piece
         switch(move){
             case MOV_LEFT:

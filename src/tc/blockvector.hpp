@@ -24,15 +24,15 @@ namespace tc {
         void shrink();
 
     public:
-        BlockVector() { size = 0; }
+        BlockVector() { this->size = 0; }
     
         
-        void append(const Block&);
-        void collapse(uint8_t, const std::array<int8_t, MAX_COLLAPSE>&&);
+        void append(Block const&);
+        void collapse(uint8_t const, CollapseBuffer const&);
         
         // Operators
-        Block& operator[](const bvec_index);
-        const Block& operator[](const bvec_index) const;
+        Block& operator[](bvec_index const);
+        Block const& operator[](bvec_index const) const;
 
         // Ranged-for interface
         Storage::iterator begin();
