@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <utility>
 
 #include "game.hpp"
 #include "block.hpp"
@@ -13,7 +12,7 @@ namespace tc {
             return false;
 
         // For each square in the piece
-        for(square_index square_i=0; square_i<BLOCK_SQUARES; square_i++) {
+        for(Block::_size_t square_i{0}; square_i<Block::NUM_SQUARES; square_i++) {
             printf("Square %d, y is %d\n", square_i, this->piece.global_y(square_i));
 
             // if is at board bottom
@@ -71,10 +70,9 @@ namespace tc {
         
         if(this->try_place_piece()) {
             puts("Placed piece");
-            CollapseBuffer lines;
-            
-            auto const count = this->boardmask.collapse(lines);
-            if(count > 0) this->blocks.collapse(count, lines);
+
+            auto const lines{this->boardmask.collapse()};
+            if(!lines.empty()) this->blocks.collapse(lines);
             
             this->piece.blank();
             return TICK;

@@ -1,45 +1,58 @@
 #ifndef BLOCKVECTOR
 #define BLOCKVECTOR
 
-#include "block.hpp"
-#include <array>
-#include <stdint.h>
-
 #include "gamedefs.h"
-#if MAX_BLK > 65536
-    #error Max block count is larger than vector counter max
-#endif
+#include "block.hpp"
+#include "collapsebuffer.hpp"
 
-typedef uint16_t bvec_index;
+#include <stdint.h> // avr-gcc can't into cstdint
 
 namespace tc {
-    class BlockVector {
+    struct BlockVector {
     public:
-        typedef std::array<Block, MAX_BLK> Storage;
+        // Typedef
+        typedef Block value_type;
+        typedef uint16_t _size_t;
+        typedef value_type& reference;
+        typedef value_type const& const_reference;
+        typedef value_type* iterator;
+        typedef value_type const* const_iterator;
 
     private:
-        Storage storage;
-        bvec_index size;
+        // Constants
+        static _size_t const CAPACITY = (GameDefs::WIDTH * GameDefs::HEIGHT)/2;
+        static_assert(CAPACITY <= 65536, "Max block count is larger than BlockVector::_size_t");
+
+        // Members
+        value_type data[CAPACITY];
+        _size_t num_elements;
         
+        // Methods
         void shrink();
 
     public:
-        BlockVector() { this->size = 0; }
-    
+        // Constructors
+        BlockVector() : num_elements(0) {}
         
-        void append(Block const&);
-        void collapse(uint8_t const, CollapseBuffer const&);
+        // Methods
+        _size_t size() const { return this->num_elements; }
+        
+        void push_back(const_reference new_block) {
+            *(this->end()) = new_block;
+            this->num_elements++;
+        }
+        void collapse(CollapseBuffer const&);
         
         // Operators
-        Block& operator[](bvec_index const);
-        Block const& operator[](bvec_index const) const;
+        reference operator[](_size_t const i) { return this->data[i]; }
+        const_reference operator[](_size_t const i) const { return this->data[i]; }
 
         // Ranged-for interface
-        Storage::iterator begin();
-        Storage::iterator end();
+        iterator begin() { return static_cast<iterator>(this->data); }
+        iterator end()   { return this->begin() + this->num_elements; }
 
-        Storage::const_iterator begin() const;
-        Storage::const_iterator end() const;
+        const_iterator begin() const { return static_cast<const_iterator>(this->data); }
+        const_iterator end()   const { return this->begin() + this->num_elements; }
     };
 }
 

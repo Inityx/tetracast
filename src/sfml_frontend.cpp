@@ -18,8 +18,8 @@ int main() {
     
     sf::RenderWindow window(
         sf::VideoMode(
-            GAME_WIDTH  * SCALE_FACTOR,
-            GAME_HEIGHT * SCALE_FACTOR
+            tc::GameDefs::WIDTH  * SCALE_FACTOR,
+            tc::GameDefs::HEIGHT * SCALE_FACTOR
         ),
         "SFML Window"
     );

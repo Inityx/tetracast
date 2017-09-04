@@ -13,19 +13,9 @@
 #define MINIMUM_TICK 100
 
 namespace tc {
-    class Game {
-    private:
-        BoardMask boardmask;
-        BlockVector blocks;
-        Block piece;
-        uint16_t tick_ms;
-        
-        bool try_sink_piece();
-        bool try_place_piece();
-        void collapse_lines();
-        void new_piece(uint8_t const);
-    
+    struct Game {
     public:
+        // Enums
         enum State {
             NO_ACTION,
             TICK,
@@ -40,6 +30,22 @@ namespace tc {
             DROP
         };
         
+
+    private:
+        // members
+        BoardMask boardmask;
+        BlockVector blocks;
+        Block piece;
+        uint16_t tick_ms;
+        
+        // Methods
+        bool try_sink_piece();
+        bool try_place_piece();
+        void collapse_lines();
+        void new_piece(uint8_t const);
+    
+    public:
+        // Constructors
         Game() { this->tick_ms = INITIAL_TICK_MS; }
         
         State try_tick(uint16_t const, uint8_t const);

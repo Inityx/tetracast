@@ -2,28 +2,31 @@
 #define BOARDMASK
 
 #include <stdint.h>
-#include <array>
 
 #include "gamedefs.h"
+#include "collapsebuffer.hpp"
 
 namespace tc {
-    typedef int8_t boardmask_index;
-    
-    class BoardMask {
+    struct BoardMask {
+    public:
+        typedef int8_t _size_t; // Signed to facilitate pieces clipping left and down
+        
     private:
         static uint8_t const STORE_BYTES{2};
-        std::array<std::array<uint8_t, GAME_HEIGHT>, STORE_BYTES> storage;
+        uint8_t data[STORE_BYTES][GameDefs::HEIGHT];
         
-        static_assert(STORE_BYTES <= 127, "Game is wider than index");
-        static_assert(GAME_HEIGHT <= 127, "Game is taller than index");
-        static_assert(GAME_WIDTH <= (STORE_BYTES*BYTE_BITS), "Game is wider than storage");
+        static_assert(STORE_BYTES <= 127, "Game is wider than BoardMask::_size_t");
+        static_assert(GameDefs::HEIGHT <= 127, "Game is taller than BoardMask::_size_t");
+        static_assert(GameDefs::WIDTH <= (STORE_BYTES * GameDefs::BYTE_BITS), "Game is wider than storage");
+        
+        bool row_is_empty(_size_t const);
 
     public:
         BoardMask();
         
-        uint8_t collapse(CollapseBuffer&);
-        bool get(boardmask_index const, boardmask_index const) const;
-        void set(boardmask_index const, boardmask_index const);
+        CollapseBuffer collapse();
+        bool get(_size_t const, _size_t const) const;
+        void set(_size_t const, _size_t const);
     };
 }
 

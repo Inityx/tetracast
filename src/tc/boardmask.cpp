@@ -1,54 +1,57 @@
 #include "boardmask.hpp"
 
-#include <array>
-
-using std::array;
+#include <string.h> // avr-gcc can't into cstring
 
 namespace tc {
     BoardMask::BoardMask() {
-        this->storage.fill({{0}});
+        memset(this->data, 0, sizeof(this->data));
     }
     
-    uint8_t BoardMask::collapse(CollapseBuffer& skip_buffer) {
-        // write indeces to buffer
-        auto buf_iter{skip_buffer.begin()};
-        for(boardmask_index row{0}; row<GAME_HEIGHT; row++)
-            for(boardmask_index byte{0}; byte<STORE_BYTES; byte++)
-                if(this->storage[byte][row] == static_cast<uint8_t>(GAME_W_BITMASK >> byte)) {
-                    *buf_iter = row;
-                    buf_iter++;
-                }
-        
-        // fill remaining with -1
-        while(buf_iter < skip_buffer.end()) {
-            *buf_iter = -1;
-            buf_iter++;
-        }
-        
-        // collapse rows
-        auto skip{0};
-        for(boardmask_index row{0}; row<(GAME_HEIGHT-skip); row++) {
-            if(row == skip_buffer[skip])
-                skip++;
+    bool BoardMask::row_is_empty(BoardMask::_size_t const row) {
+        for(BoardMask::_size_t byte{0}; byte<STORE_BYTES; byte++)
+            if(this->data[byte][row] != 0)
+                return false;
 
-            if(skip == 0)
+        return true;
+    }
+
+    CollapseBuffer BoardMask::collapse() {
+        auto collapse_buffer{CollapseBuffer()};
+
+        // write empty row indeces to buffer
+        for(BoardMask::_size_t row{0}; row<GameDefs::HEIGHT; row++)
+            if(this->row_is_empty(row))
+                collapse_buffer.push_back(row);
+
+        // collapse rows
+        auto skip_distance{0};
+        for(BoardMask::_size_t row{0}; row<(GameDefs::HEIGHT-skip_distance); row++) {
+            if(row == collapse_buffer[skip_distance])
+                skip_distance++;
+
+            if(skip_distance == 0)
                 continue;
 
-            for (auto& byte : this->storage)
-                byte[row] = byte[row+skip];
+            for(BoardMask::_size_t byte{0}; byte<BoardMask::STORE_BYTES; byte++)
+                this->data[byte][row] = this->data[byte][row+skip_distance];
         }
         
-        // return number of collapsed rows
-        return skip;
+        return collapse_buffer;
     }
     
-    bool BoardMask::get(boardmask_index const row, boardmask_index const column) const {
+    bool BoardMask::get(
+        BoardMask::_size_t const row,
+        BoardMask::_size_t const column
+    ) const {
         // TODO: space above board should always be false
 
         // TODO: get board pixel
         return false;
     }
-    void BoardMask::set(boardmask_index const row, boardmask_index const column) {
+    void BoardMask::set(
+        BoardMask::_size_t const row,
+        BoardMask::_size_t const column
+    ) {
         // TODO: set board pixel
     }
 }

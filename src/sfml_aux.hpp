@@ -18,8 +18,8 @@ void draw_dots(sf::RenderWindow& window, const int scale) {
     dot.setOrigin(radius, radius);
     dot.setFillColor(sf::Color(64, 0, 0));
     
-    for(auto i = 1; i<=GAME_HEIGHT; i++) {
-        for(auto j = 1; j<=GAME_WIDTH; j++) {
+    for(auto i = 1; i<=tc::GameDefs::HEIGHT; i++) {
+        for(auto j = 1; j<=tc::GameDefs::WIDTH; j++) {
             dot.setPosition(scale*j-(scale/2), scale*i-(scale/2));
             window.draw(dot);
         }
@@ -28,8 +28,8 @@ void draw_dots(sf::RenderWindow& window, const int scale) {
 
 void draw_block(sf::RenderWindow& window, const int scale, const tc::Block& block) {
     for(
-        tc::square_index square_i = 0;
-        square_i<BLOCK_SQUARES;
+        tc::Block::_size_t square_i = 0;
+        square_i<tc::Block::NUM_SQUARES;
         square_i++
     ) {
         // TODO
